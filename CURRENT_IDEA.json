@@ -1,0 +1,10 @@
+{
+  "status": "pending_review",
+  "name": "invoiceflow",
+  "idea": "Free professional invoice generator — create, customize, and download PDF invoices instantly in the browser. No sign-up required.",
+  "why_trending": "Freelancing and solopreneurship are at an all-time high in 2026. Millions of new freelancers need simple invoicing tools that don't require expensive subscriptions.",
+  "why_profitable": "Invoice tools monetize well via ads, premium features (custom branding, recurring invoices, payment links), or a one-time Pro upgrade. Similar tools charge $10-$30/month.",
+  "why_easy": "100% static HTML/CSS/JS — no backend, no database, no auth. Works on GitHub Pages instantly. Print-to-PDF built into every browser.",
+  "repo_url": "https://github.com/pepegoat/invoiceflow",
+  "created_at": "2026-05-23T04:00:00Z"
+}
