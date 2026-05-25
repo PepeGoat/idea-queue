@@ -1,10 +1,11 @@
 {
   "status": "pending_review",
-  "name": "invoiceflow",
-  "idea": "Free professional invoice generator — create, customize, and download PDF invoices instantly in the browser. No sign-up required.",
-  "why_trending": "Freelancing and solopreneurship are at an all-time high in 2026. Millions of new freelancers need simple invoicing tools that don't require expensive subscriptions.",
-  "why_profitable": "Invoice tools monetize well via ads, premium features (custom branding, recurring invoices, payment links), or a one-time Pro upgrade. Similar tools charge $10-$30/month.",
-  "why_easy": "100% static HTML/CSS/JS — no backend, no database, no auth. Works on GitHub Pages instantly. Print-to-PDF built into every browser.",
-  "repo_url": "https://github.com/pepegoat/invoiceflow",
-  "created_at": "2026-05-23T04:00:00Z"
+  "name": "billcraft",
+  "idea": "BillCraft is a free, browser-only invoice generator that lets freelancers and small businesses create polished, professional PDF invoices in seconds — no signup, no watermark, no backend.",
+  "why_trending": "The 'no login required, runs in browser' tool category is the #1 trend in 2026 (cited in April 2026 DEV.to roundup and trendnovaworld's best-free-tools ranking). Searches for 'free invoice generator no login' sustain millions of monthly visits to sites like invoice-generator.com, and freelance gig work continues growing globally.",
+  "why_profitable": "Monetizes via display ads (high CPC freelance/finance keywords ~$2–6 CPM), optional premium tier for custom branding / bulk export, and affiliate links to accounting software (FreshBooks, QuickBooks, Wave). Comparable sites earn $5k–$50k/month at scale.",
+  "why_easy": "100% static HTML/CSS/JS — jsPDF handles PDF generation entirely client-side via CDN, no server, database, or auth layer needed. Can be hosted on GitHub Pages, Netlify, or any static CDN at zero cost.",
+  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/billcraft",
+  "demo_path": "demos/billcraft/index.html",
+  "created_at": "2026-05-25T02:14:35Z"
 }
