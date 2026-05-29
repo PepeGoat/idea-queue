@@ -1,11 +1,11 @@
 {
   "status": "pending_review",
-  "name": "resumeflow",
-  "idea": "ResumeFlow is a free, browser-only resume builder that lets job seekers create polished, ATS-friendly PDF resumes in minutes with live preview, multiple templates, and 8 color themes — no signup, no watermarks, no backend required.",
-  "why_trending": "'Free resume builder' sustains millions of monthly searches in 2026; AI-driven job market disruption is accelerating workforce transitions globally, keeping resume creation demand at an all-time high per Google Trends and Reddit r/jobs discussions in May 2026. Zety and Resume.io each see 10M+ monthly visitors.",
-  "why_profitable": "Competitors Resume.io, Zety, and Novoresume charge $2–40/month; free tools monetize via display ads (high-CPC career/job keywords at $3–8 CPM), premium template unlocks ($5–9 one-time), and affiliate links to LinkedIn Premium and job boards (Indeed, ZipRecruiter).",
-  "why_easy": "100% static HTML/CSS/JS — jsPDF handles all PDF generation client-side via CDN, localStorage persists the resume between sessions with zero server calls. Two layout templates, 8 accent colors, and 5 section types all driven by a single 774-line file. Deployable on GitHub Pages or Netlify at zero cost.",
-  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/resumeflow",
-  "demo_path": "demos/resumeflow/index.html",
-  "created_at": "2026-05-28T00:00:00Z"
+  "name": "colorsnap",
+  "idea": "ColorSnap is a free, browser-only color palette extractor that lets designers and developers instantly pull hex codes, RGB values, and export-ready code (CSS, SCSS, Tailwind, JSON) from any uploaded image — no signup, no server, completely private.",
+  "why_trending": "Color palette tools are perennially high-traffic among designers; Coolors.co ranks in the top 10k globally and earns premium subscriptions at $3/month. In 2026, the surge in AI-generated imagery and brand-kit creation for creator-economy products has spiked searches for 'extract colors from image' and 'image color palette generator' per Google Trends signals found in May 2026 research.",
+  "why_profitable": "Coolors Premium charges $3/month; Adobe Color has Pro features. A free tool monetizes through high-CPM display ads (design/dev audience at $4–9 CPM), a one-time 'Pro unlock' for bulk export and saved palettes ($4.99), and affiliate links to design tools like Figma, Canva Pro, and Adobe.",
+  "why_easy": "100% static HTML/CSS/JS — the HTML5 Canvas API reads pixel data client-side with no server calls. Three built-in extraction algorithms (Median Cut, K-Means, Dominant Frequency) run entirely in the browser. Six export formats (CSS variables, SCSS, Tailwind config, HEX, RGB, JSON) are pure string generation. Zero npm, zero build step, deployable to GitHub Pages instantly.",
+  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/colorsnap",
+  "demo_path": "demos/colorsnap/index.html",
+  "created_at": "2026-05-29T00:00:00Z"
 }
