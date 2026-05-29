@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ColorSnap — Extract Palettes from Any Image</title>
+  <meta name="description" content="Upload any image and instantly extract a beautiful color palette. Get hex codes, RGB values, CSS variables. Free, no signup." />
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #23232e;
+      --border: #2e2e3d;
+      --text: #f0f0f5;
+      --muted: #8888a0;
+      --accent: #7c6af7;
+      --accent2: #5b4de0;
+      --success: #3ecf8e;
+      --danger: #f96464;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0,0,0,.45);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.25rem; font-weight: 700; letter-spacing: -.5px;
+      text-decoration: none; color: var(--text);
+    }
+    .logo-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: linear-gradient(135deg, #f96464, #f7b84b, #3ecf8e, #7c6af7);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .badge {
+      font-size: .7rem; background: var(--accent); color: #fff;
+      padding: 2px 8px; border-radius: 20px; font-weight: 600;
+      letter-spacing: .3px; margin-left: 6px;
+    }
+    nav { display: flex; gap: 12px; }
+    nav a {
+      color: var(--muted); text-decoration: none; font-size: .88rem;
+      padding: 6px 14px; border-radius: 8px; transition: all .2s;
+    }
+    nav a:hover { background: var(--surface2); color: var(--text); }
+
+    /* HERO */
+    .hero {
+      text-align: center; padding: 64px 24px 40px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; letter-spacing: -1.5px; line-height: 1.15;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      margin-top: 14px; color: var(--muted); font-size: 1.08rem;
+      max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.65;
+    }
+    .trust-row {
+      margin-top: 18px; display: flex; justify-content: center;
+      align-items: center; gap: 24px; flex-wrap: wrap; color: var(--muted);
+      font-size: .82rem;
+    }
+    .trust-row span { display: flex; align-items: center; gap: 5px; }
+
+    /* MAIN CARD */
+    .main { flex: 1; padding: 0 24px 64px; max-width: 960px; margin: 0 auto; width: 100%; }
+
+    /* DROP ZONE */
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 56px 24px; text-align: center; cursor: pointer;
+      transition: all .25s; background: var(--surface); position: relative;
+      overflow: hidden;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--accent); background: rgba(124,106,247,.08);
+    }
+    .drop-zone input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 0;
+    }
+    .drop-icon { font-size: 3rem; margin-bottom: 14px; display: block; }
+    .drop-zone h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 6px; }
+    .drop-zone p { color: var(--muted); font-size: .9rem; }
+    .btn-upload {
+      display: inline-block; margin-top: 18px;
+      background: var(--accent); color: #fff; padding: 10px 28px;
+      border-radius: 8px; font-weight: 600; font-size: .95rem;
+      border: none; cursor: pointer; transition: all .2s;
+    }
+    .btn-upload:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    /* URL INPUT */
+    .url-row {
+      display: flex; gap: 10px; margin-top: 14px;
+    }
+    .url-input {
+      flex: 1; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); padding: 10px 14px; border-radius: 8px;
+      font-size: .9rem; outline: none; transition: border .2s;
+    }
+    .url-input:focus { border-color: var(--accent); }
+    .url-input::placeholder { color: var(--muted); }
+    .btn-url {
+      background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+      padding: 10px 20px; border-radius: 8px; cursor: pointer;
+      font-size: .9rem; font-weight: 600; transition: all .2s;
+    }
+    .btn-url:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* DIVIDER */
+    .or-divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--muted); font-size: .82rem; margin: 16px 0 4px;
+    }
+    .or-divider::before, .or-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* CONTROLS */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-top: 18px; align-items: center;
+    }
+    .control-group { display: flex; align-items: center; gap: 8px; }
+    .control-group label { font-size: .85rem; color: var(--muted); }
+    .control-select, .control-range {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); border-radius: 6px; padding: 6px 10px;
+      font-size: .85rem; outline: none; cursor: pointer;
+    }
+    .control-select:focus { border-color: var(--accent); }
+    .btn-extract {
+      margin-left: auto; background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; padding: 10px 28px; border-radius: 8px;
+      font-weight: 700; font-size: .95rem; cursor: pointer; transition: all .2s;
+      box-shadow: 0 4px 16px rgba(124,106,247,.35);
+    }
+    .btn-extract:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,106,247,.45); }
+    .btn-extract:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* PREVIEW + CANVAS */
+    .workspace { display: none; margin-top: 32px; }
+    .workspace.visible { display: block; }
+    .workspace-inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    }
+    @media (max-width: 680px) { .workspace-inner { grid-template-columns: 1fr; } }
+    .image-panel {
+      background: var(--surface); border-radius: var(--radius);
+      overflow: hidden; position: relative;
+    }
+    .image-panel img {
+      width: 100%; display: block; object-fit: contain;
+      max-height: 340px; background: #111;
+    }
+    .image-label {
+      position: absolute; bottom: 10px; left: 10px;
+      background: rgba(0,0,0,.7); color: #fff; font-size: .78rem;
+      padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(6px);
+    }
+    canvas { display: none; }
+
+    /* PALETTE */
+    .palette-panel { display: flex; flex-direction: column; gap: 12px; }
+    .palette-header {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .palette-header h3 { font-size: 1rem; font-weight: 700; }
+    .palette-actions { display: flex; gap: 8px; }
+    .btn-action {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted); padding: 6px 14px; border-radius: 7px;
+      font-size: .8rem; cursor: pointer; transition: all .2s;
+    }
+    .btn-action:hover { border-color: var(--accent); color: var(--accent); }
+
+    .swatch-list { display: flex; flex-direction: column; gap: 8px; }
+    .swatch {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface2); border-radius: 10px; padding: 10px 14px;
+      border: 1px solid var(--border); transition: all .2s; cursor: pointer;
+      position: relative;
+    }
+    .swatch:hover { border-color: var(--accent); transform: translateX(2px); }
+    .swatch-color {
+      width: 42px; height: 42px; border-radius: 8px; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    .swatch-info { flex: 1; }
+    .swatch-hex { font-size: 1rem; font-weight: 700; font-family: 'Courier New', monospace; }
+    .swatch-rgb { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+    .swatch-pct {
+      font-size: .78rem; color: var(--muted); text-align: right;
+      min-width: 36px;
+    }
+    .copy-hint {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      font-size: .75rem; color: var(--success); opacity: 0;
+      transition: opacity .2s; pointer-events: none;
+    }
+    .swatch.copied .copy-hint { opacity: 1; }
+
+    /* FULL GRADIENT BAR */
+    .gradient-bar {
+      height: 18px; border-radius: 9px; width: 100%;
+      margin-top: 6px; overflow: hidden;
+    }
+
+    /* EXPORT SECTION */
+    .export-section {
+      margin-top: 28px; background: var(--surface); border-radius: var(--radius);
+      padding: 22px 24px; border: 1px solid var(--border);
+    }
+    .export-section h3 { font-size: .95rem; font-weight: 700; margin-bottom: 14px; }
+    .export-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tab-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted); padding: 5px 14px; border-radius: 6px;
+      font-size: .82rem; cursor: pointer; transition: all .2s;
+    }
+    .tab-btn.active, .tab-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,106,247,.1); }
+    .export-code {
+      background: #0a0a10; border-radius: 8px; padding: 14px 16px;
+      font-family: 'Courier New', monospace; font-size: .82rem;
+      color: #cdd9e5; white-space: pre-wrap; word-break: break-all;
+      max-height: 180px; overflow-y: auto; border: 1px solid var(--border);
+    }
+    .export-code::-webkit-scrollbar { width: 6px; }
+    .export-code::-webkit-scrollbar-track { background: transparent; }
+    .export-code::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .copy-all-btn {
+      margin-top: 10px; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted); padding: 7px 18px; border-radius: 7px;
+      font-size: .82rem; cursor: pointer; transition: all .2s;
+    }
+    .copy-all-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* SAMPLE IMAGES */
+    .samples {
+      margin-top: 28px; background: var(--surface); border-radius: var(--radius);
+      padding: 20px 24px; border: 1px solid var(--border);
+    }
+    .samples h3 { font-size: .92rem; font-weight: 700; margin-bottom: 14px; color: var(--muted); }
+    .sample-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .sample-chip {
+      display: flex; gap: 4px; align-items: center; cursor: pointer;
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      transition: all .2s; background: var(--surface2);
+    }
+    .sample-chip:hover { border-color: var(--accent); }
+    .sample-swatch { width: 18px; height: 36px; }
+    .sample-label { font-size: .78rem; color: var(--muted); padding: 0 10px; }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: var(--success); color: #fff; padding: 10px 22px;
+      border-radius: 40px; font-size: .88rem; font-weight: 600;
+      box-shadow: var(--shadow); transition: transform .3s; z-index: 999;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* LOADER */
+    .loader {
+      display: none; text-align: center; padding: 28px;
+      color: var(--muted); font-size: .9rem;
+    }
+    .loader.visible { display: block; }
+    .spinner {
+      width: 32px; height: 32px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin .7s linear infinite; margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border); background: var(--surface);
+      padding: 22px 32px; text-align: center;
+      color: var(--muted); font-size: .83rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="logo">
+    <div class="logo-icon">🎨</div>
+    ColorSnap
+    <span class="badge">Free</span>
+  </a>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="#export">Export</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Extract Any Color Palette<br>in Seconds</h1>
+  <p>Upload an image and instantly get a beautiful, copy-ready color palette with hex codes, RGB values, CSS variables, and more. No signup. No watermark.</p>
+  <div class="trust-row">
+    <span>🆓 100% Free</span>
+    <span>🔒 No Upload to Server</span>
+    <span>⚡ Instant Results</span>
+    <span>📦 Export CSS / Figma / PNG</span>
+  </div>
+</section>
+
+<main class="main">
+
+  <!-- Upload Zone -->
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/*" />
+    <span class="drop-icon">🖼️</span>
+    <h3>Drop your image here</h3>
+    <p>PNG, JPG, GIF, WebP, SVG — up to 20 MB</p>
+    <button class="btn-upload" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">Choose Image</button>
+  </div>
+
+  <div class="or-divider">or paste an image URL</div>
+
+  <div class="url-row">
+    <input type="url" class="url-input" id="urlInput" placeholder="https://example.com/photo.jpg" />
+    <button class="btn-url" id="loadUrlBtn">Load URL</button>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="control-group">
+      <label for="colorCount">Colors:</label>
+      <select class="control-select" id="colorCount">
+        <option value="4">4</option>
+        <option value="6" selected>6</option>
+        <option value="8">8</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="algo">Algorithm:</label>
+      <select class="control-select" id="algo">
+        <option value="median" selected>Median Cut</option>
+        <option value="kmeans">K-Means</option>
+        <option value="dominant">Dominant</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="quality">Quality:</label>
+      <select class="control-select" id="quality">
+        <option value="1">High</option>
+        <option value="3" selected>Medium</option>
+        <option value="6">Fast</option>
+      </select>
+    </div>
+    <button class="btn-extract" id="extractBtn" disabled>Extract Palette ✨</button>
+  </div>
+
+  <!-- Loader -->
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    Analyzing colors…
+  </div>
+
+  <!-- Workspace -->
+  <div class="workspace" id="workspace">
+    <div class="workspace-inner">
+
+      <div class="image-panel">
+        <img id="previewImg" src="" alt="Preview" />
+        <span class="image-label" id="imageLabel">image.jpg</span>
+      </div>
+
+      <div class="palette-panel">
+        <div class="palette-header">
+          <h3>Extracted Palette</h3>
+          <div class="palette-actions">
+            <button class="btn-action" id="sortLumBtn" title="Sort by brightness">Sort by Lum</button>
+            <button class="btn-action" id="sortHueBtn" title="Sort by hue">Sort by Hue</button>
+          </div>
+        </div>
+        <div class="gradient-bar" id="gradientBar"></div>
+        <div class="swatch-list" id="swatchList"></div>
+      </div>
+
+    </div>
+
+    <!-- Export Section -->
+    <div class="export-section" id="export">
+      <h3>Export</h3>
+      <div class="export-tabs">
+        <button class="tab-btn active" data-tab="css">CSS Variables</button>
+        <button class="tab-btn" data-tab="hex">HEX List</button>
+        <button class="tab-btn" data-tab="rgb">RGB List</button>
+        <button class="tab-btn" data-tab="tailwind">Tailwind</button>
+        <button class="tab-btn" data-tab="json">JSON</button>
+        <button class="tab-btn" data-tab="scss">SCSS</button>
+      </div>
+      <pre class="export-code" id="exportCode"></pre>
+      <button class="copy-all-btn" id="copyAllBtn">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <!-- Sample palettes -->
+  <div class="samples" id="how">
+    <h3>Try a sample gradient</h3>
+    <div class="sample-row" id="sampleRow"></div>
+  </div>
+
+</main>
+
+<footer>
+  <p>ColorSnap — 100% free, client-side only. Your images never leave your device. &nbsp;|&nbsp; <a href="#">GitHub</a> &nbsp;|&nbsp; Built with ❤️ for designers &amp; developers</p>
+</footer>
+
+<div class="toast" id="toast">Copied!</div>
+<canvas id="canvas"></canvas>
+
+<script>
+// ─── Utilities ───────────────────────────────────────────────────────────────
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+function hexToRgb(hex) {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return m ? { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) } : null;
+}
+function luminance(r, g, b) {
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+function hue(r, g, b) {
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h;
+  if (max === min) return 0;
+  const d = max - min;
+  if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) h = ((b - r) / d + 2) / 6;
+  else h = ((r - g) / d + 4) / 6;
+  return h;
+}
+function colorDistance(a, b) {
+  return Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);
+}
+
+// ─── Pixel Sampling ───────────────────────────────────────────────────────────
+function getPixels(canvas, quality) {
+  const ctx = canvas.getContext('2d');
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  const pixels = [];
+  for (let i = 0; i < data.length; i += 4 * quality) {
+    const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+    if (a < 128) continue;
+    if (r > 245 && g > 245 && b > 245) continue;
+    if (r < 10 && g < 10 && b < 10) continue;
+    pixels.push([r, g, b]);
+  }
+  return pixels;
+}
+
+// ─── Median Cut ───────────────────────────────────────────────────────────────
+function medianCut(pixels, depth) {
+  if (depth === 0 || pixels.length === 0) {
+    if (pixels.length === 0) return null;
+    const avg = pixels.reduce((acc, p) => [acc[0]+p[0], acc[1]+p[1], acc[2]+p[2]], [0,0,0]);
+    return [Math.round(avg[0]/pixels.length), Math.round(avg[1]/pixels.length), Math.round(avg[2]/pixels.length)];
+  }
+  const ranges = [0,1,2].map(ch => {
+    const vals = pixels.map(p => p[ch]);
+    return Math.max(...vals) - Math.min(...vals);
+  });
+  const maxCh = ranges.indexOf(Math.max(...ranges));
+  pixels.sort((a, b) => a[maxCh] - b[maxCh]);
+  const mid = Math.floor(pixels.length / 2);
+  return [
+    medianCut(pixels.slice(0, mid), depth - 1),
+    medianCut(pixels.slice(mid), depth - 1)
+  ];
+}
+function flattenTree(tree) {
+  if (!tree) return [];
+  if (typeof tree[0] === 'number') return [tree];
+  return [...flattenTree(tree[0]), ...flattenTree(tree[1])];
+}
+function extractMedianCut(pixels, count) {
+  const depth = Math.ceil(Math.log2(count));
+  const tree = medianCut([...pixels], depth);
+  let colors = flattenTree(tree);
+  const result = [];
+  for (const c of colors) {
+    if (result.every(r => colorDistance(c, r) > 30)) result.push(c);
+    if (result.length >= count) break;
+  }
+  return result.slice(0, count);
+}
+
+// ─── K-Means ─────────────────────────────────────────────────────────────────
+function extractKMeans(pixels, k, maxIter = 20) {
+  let centroids = [];
+  const step = Math.floor(pixels.length / k);
+  for (let i = 0; i < k; i++) centroids.push([...pixels[i * step]]);
+
+  for (let iter = 0; iter < maxIter; iter++) {
+    const clusters = Array.from({length: k}, () => []);
+    for (const p of pixels) {
+      let minD = Infinity, idx = 0;
+      for (let j = 0; j < k; j++) {
+        const d = colorDistance(p, centroids[j]);
+        if (d < minD) { minD = d; idx = j; }
+      }
+      clusters[idx].push(p);
+    }
+    const newCentroids = clusters.map(cl => {
+      if (cl.length === 0) return [128, 128, 128];
+      const sum = cl.reduce((a, p) => [a[0]+p[0], a[1]+p[1], a[2]+p[2]], [0,0,0]);
+      return sum.map(v => Math.round(v / cl.length));
+    });
+    let moved = false;
+    for (let j = 0; j < k; j++) {
+      if (colorDistance(centroids[j], newCentroids[j]) > 1) moved = true;
+    }
+    centroids = newCentroids;
+    if (!moved) break;
+  }
+  return centroids;
+}
+
+// ─── Dominant (frequency-based) ───────────────────────────────────────────────
+function extractDominant(pixels, count) {
+  const bucketSize = 32;
+  const freq = {};
+  for (const [r, g, b] of pixels) {
+    const key = `${Math.round(r/bucketSize)*bucketSize},${Math.round(g/bucketSize)*bucketSize},${Math.round(b/bucketSize)*bucketSize}`;
+    freq[key] = (freq[key] || 0) + 1;
+  }
+  return Object.entries(freq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, count * 4)
+    .map(([k]) => k.split(',').map(Number))
+    .filter((c, i, arr) => arr.slice(0, i).every(prev => colorDistance(c, prev) > 40))
+    .slice(0, count);
+}
+
+// ─── Main extraction ──────────────────────────────────────────────────────────
+function extractColors(canvas, count, algo, quality) {
+  const pixels = getPixels(canvas, quality);
+  if (pixels.length < count) return [];
+
+  const maxPixels = 12000;
+  const sampled = pixels.length > maxPixels
+    ? pixels.filter((_, i) => i % Math.ceil(pixels.length / maxPixels) === 0)
+    : pixels;
+
+  let colors;
+  if (algo === 'kmeans') colors = extractKMeans(sampled, count);
+  else if (algo === 'dominant') colors = extractDominant(sampled, count);
+  else colors = extractMedianCut(sampled, count);
+
+  const result = colors.map(c => {
+    const nearby = pixels.filter(p => colorDistance(p, c) < 40).length;
+    return { rgb: c, pct: Math.round(nearby / pixels.length * 100) };
+  });
+  return result.sort((a, b) => b.pct - a.pct);
+}
+
+// ─── DOM refs ──────────────────────────────────────────────────────────────────
+const dropZone   = document.getElementById('dropZone');
+const fileInput  = document.getElementById('fileInput');
+const urlInput   = document.getElementById('urlInput');
+const loadUrlBtn = document.getElementById('loadUrlBtn');
+const extractBtn = document.getElementById('extractBtn');
+const previewImg = document.getElementById('previewImg');
+const imageLabel = document.getElementById('imageLabel');
+const workspace  = document.getElementById('workspace');
+const swatchList = document.getElementById('swatchList');
+const gradientBar= document.getElementById('gradientBar');
+const exportCode = document.getElementById('exportCode');
+const canvas     = document.getElementById('canvas');
+const loader     = document.getElementById('loader');
+const toast      = document.getElementById('toast');
+
+let currentPalette = [];
+let currentTab = 'css';
+
+// ─── Drag & Drop ──────────────────────────────────────────────────────────────
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) loadFile(file);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) loadFile(fileInput.files[0]);
+});
+
+function loadFile(file) {
+  const url = URL.createObjectURL(file);
+  imageLabel.textContent = file.name;
+  loadImageSrc(url);
+}
+
+loadUrlBtn.addEventListener('click', () => {
+  const url = urlInput.value.trim();
+  if (!url) return;
+  imageLabel.textContent = url.split('/').pop() || 'image';
+  loadImageSrc(url);
+});
+urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadUrlBtn.click(); });
+
+function loadImageSrc(src) {
+  previewImg.onload = () => {
+    canvas.width  = previewImg.naturalWidth;
+    canvas.height = previewImg.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(previewImg, 0, 0);
+    extractBtn.disabled = false;
+    workspace.classList.add('visible');
+    runExtraction();
+  };
+  previewImg.onerror = () => showToast('Failed to load image. Try another URL.', '#f96464');
+  previewImg.crossOrigin = 'anonymous';
+  previewImg.src = src;
+}
+
+// ─── Extraction ────────────────────────────────────────────────────────────────
+extractBtn.addEventListener('click', runExtraction);
+
+function runExtraction() {
+  if (extractBtn.disabled) return;
+  loader.classList.add('visible');
+  swatchList.innerHTML = '';
+  setTimeout(() => {
+    const count   = parseInt(document.getElementById('colorCount').value);
+    const algo    = document.getElementById('algo').value;
+    const quality = parseInt(document.getElementById('quality').value);
+    currentPalette = extractColors(canvas, count, algo, quality);
+    renderPalette(currentPalette);
+    loader.classList.remove('visible');
+  }, 50);
+}
+
+// ─── Render Palette ────────────────────────────────────────────────────────────
+function renderPalette(palette) {
+  swatchList.innerHTML = '';
+  palette.forEach((entry, idx) => {
+    const [r, g, b] = entry.rgb;
+    const hex = rgbToHex(r, g, b);
+    const lum = luminance(r, g, b);
+    const textColor = lum > 140 ? '#111' : '#fff';
+
+    const div = document.createElement('div');
+    div.className = 'swatch';
+    div.innerHTML = `
+      <div class="swatch-color" style="background:${hex}"></div>
+      <div class="swatch-info">
+        <div class="swatch-hex">${hex}</div>
+        <div class="swatch-rgb">rgb(${r}, ${g}, ${b})</div>
+      </div>
+      <div class="swatch-pct">${entry.pct}%</div>
+      <span class="copy-hint">Copied!</span>
+    `;
+    div.addEventListener('click', () => {
+      navigator.clipboard.writeText(hex).then(() => {
+        div.classList.add('copied');
+        showToast(`Copied ${hex}`);
+        setTimeout(() => div.classList.remove('copied'), 1500);
+      });
+    });
+    swatchList.appendChild(div);
+  });
+
+  const stops = palette.map((e, i) => `rgb(${e.rgb.join(',')}) ${Math.round(i/(palette.length-1)*100)}%`).join(', ');
+  gradientBar.style.background = `linear-gradient(to right, ${stops})`;
+
+  updateExport();
+}
+
+// ─── Sort buttons ──────────────────────────────────────────────────────────────
+document.getElementById('sortLumBtn').addEventListener('click', () => {
+  currentPalette = [...currentPalette].sort((a, b) => luminance(...b.rgb) - luminance(...a.rgb));
+  renderPalette(currentPalette);
+});
+document.getElementById('sortHueBtn').addEventListener('click', () => {
+  currentPalette = [...currentPalette].sort((a, b) => hue(...a.rgb) - hue(...b.rgb));
+  renderPalette(currentPalette);
+});
+
+// ─── Export ────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTab = btn.dataset.tab;
+    updateExport();
+  });
+});
+
+function updateExport() {
+  if (!currentPalette.length) return;
+  const hexList = currentPalette.map(e => rgbToHex(...e.rgb));
+
+  let code = '';
+  switch (currentTab) {
+    case 'css':
+      code = ':root {\n' + hexList.map((h, i) => `  --color-${i+1}: ${h};`).join('\n') + '\n}';
+      break;
+    case 'hex':
+      code = hexList.join('\n');
+      break;
+    case 'rgb':
+      code = currentPalette.map(e => `rgb(${e.rgb.join(', ')})`).join('\n');
+      break;
+    case 'tailwind':
+      code = `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n` +
+        hexList.map((h, i) => `        'snap-${i+1}': '${h}',`).join('\n') +
+        `\n      }\n    }\n  }\n}`;
+      break;
+    case 'json':
+      code = JSON.stringify({ palette: hexList.map((h, i) => ({ id: i+1, hex: h, rgb: currentPalette[i].rgb })) }, null, 2);
+      break;
+    case 'scss':
+      code = hexList.map((h, i) => `$color-${i+1}: ${h};`).join('\n');
+      break;
+  }
+  exportCode.textContent = code;
+}
+
+document.getElementById('copyAllBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(exportCode.textContent).then(() => showToast('Copied to clipboard!'));
+});
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, bg = '') {
+  toast.textContent = msg;
+  if (bg) toast.style.background = bg;
+  else toast.style.background = '';
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ─── Sample gradients ─────────────────────────────────────────────────────────
+const samples = [
+  { label: 'Sunset', colors: ['#FF6B6B','#FFA07A','#FFD700','#FF8C00'] },
+  { label: 'Ocean',  colors: ['#003366','#0066CC','#00BFFF','#7FFFD4'] },
+  { label: 'Forest', colors: ['#1B4332','#2D6A4F','#52B788','#B7E4C7'] },
+  { label: 'Lavender',colors:['#9B59B6','#8E44AD','#D7BDE2','#F3E5F5'] },
+  { label: 'Neon',   colors: ['#FF0080','#FF4500','#00FF7F','#00BFFF'] },
+  { label: 'Earth',  colors: ['#8B4513','#D2691E','#F4A460','#FFDEAD'] },
+];
+
+const sampleRow = document.getElementById('sampleRow');
+samples.forEach(s => {
+  const chip = document.createElement('div');
+  chip.className = 'sample-chip';
+  chip.innerHTML = s.colors.map(c => `<div class="sample-swatch" style="background:${c}"></div>`).join('') +
+    `<span class="sample-label">${s.label}</span>`;
+  chip.addEventListener('click', () => loadSample(s));
+  sampleRow.appendChild(chip);
+});
+
+function loadSample(sample) {
+  const w = 400, h = 100;
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, w, 0);
+  sample.colors.forEach((c, i) => grad.addColorStop(i / (sample.colors.length - 1), c));
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+  previewImg.src = canvas.toDataURL();
+  imageLabel.textContent = sample.label + ' gradient';
+  workspace.classList.add('visible');
+  extractBtn.disabled = false;
+  runExtraction();
+}
+</script>
+</body>
+</html>
