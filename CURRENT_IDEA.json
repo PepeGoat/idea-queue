@@ -1,11 +1,11 @@
 {
   "status": "pending_review",
-  "name": "colorsnap",
-  "idea": "ColorSnap is a free, browser-only color palette extractor that lets designers and developers instantly pull hex codes, RGB values, and export-ready code (CSS, SCSS, Tailwind, JSON) from any uploaded image — no signup, no server, completely private.",
-  "why_trending": "Color palette tools are perennially high-traffic among designers; Coolors.co ranks in the top 10k globally and earns premium subscriptions at $3/month. In 2026, the surge in AI-generated imagery and brand-kit creation for creator-economy products has spiked searches for 'extract colors from image' and 'image color palette generator' per Google Trends signals found in May 2026 research.",
-  "why_profitable": "Coolors Premium charges $3/month; Adobe Color has Pro features. A free tool monetizes through high-CPM display ads (design/dev audience at $4–9 CPM), a one-time 'Pro unlock' for bulk export and saved palettes ($4.99), and affiliate links to design tools like Figma, Canva Pro, and Adobe.",
-  "why_easy": "100% static HTML/CSS/JS — the HTML5 Canvas API reads pixel data client-side with no server calls. Three built-in extraction algorithms (Median Cut, K-Means, Dominant Frequency) run entirely in the browser. Six export formats (CSS variables, SCSS, Tailwind config, HEX, RGB, JSON) are pure string generation. Zero npm, zero build step, deployable to GitHub Pages instantly.",
-  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/colorsnap",
-  "demo_path": "demos/colorsnap/index.html",
-  "created_at": "2026-05-29T00:00:00Z"
+  "name": "billflow",
+  "idea": "BillFlow is a free, instant invoice generator for freelancers and small businesses — fill in your details, add line items, and export a professional PDF invoice in seconds, all inside the browser with zero sign-up.",
+  "why_trending": "The freelance economy is accelerating in 2026: searches for 'free invoice generator' and 'invoice template PDF' consistently rank among the top commercial-intent queries in the tools category (competitors like Invoice Simple, FreshBooks Lite, and Wave all appear in top-10 ad positions). The post-pandemic remote-work wave and creator-economy boom have driven millions of new freelancers who need invoicing tools — validated by May 2026 micro-SaaS research showing solopreneurs as the #1 underserved segment for lightweight billing utilities.",
+  "why_profitable": "Direct competitors monetize heavily: FreshBooks charges $17–55/month, Invoice Simple $9.99/month, Wave earns via payment processing fees (2.9% + $0.30 per transaction). A free tool captures high-intent traffic and monetizes via display ads ($5–12 CPM from a finance/business audience), a one-time 'Pro unlock' for custom templates and branding ($4.99), and affiliate commissions from accounting tools like QuickBooks and FreshBooks.",
+  "why_easy": "100% static HTML/CSS/JS — all invoice logic runs client-side. jsPDF (CDN) converts the live HTML preview to a pixel-perfect PDF with one function call. html2canvas handles PNG export. LocalStorage persists drafts between sessions. No database, no auth, no server — deployable to GitHub Pages, Netlify, or any static host instantly.",
+  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/billflow",
+  "demo_path": "demos/billflow/index.html",
+  "created_at": "2026-05-30T00:00:00Z"
 }
