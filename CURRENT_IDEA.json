@@ -1,11 +1,11 @@
 {
   "status": "pending_review",
-  "name": "billflow",
-  "idea": "BillFlow is a free, instant invoice generator for freelancers and small businesses — fill in your details, add line items, and export a professional PDF invoice in seconds, all inside the browser with zero sign-up.",
-  "why_trending": "The freelance economy is accelerating in 2026: searches for 'free invoice generator' and 'invoice template PDF' consistently rank among the top commercial-intent queries in the tools category (competitors like Invoice Simple, FreshBooks Lite, and Wave all appear in top-10 ad positions). The post-pandemic remote-work wave and creator-economy boom have driven millions of new freelancers who need invoicing tools — validated by May 2026 micro-SaaS research showing solopreneurs as the #1 underserved segment for lightweight billing utilities.",
-  "why_profitable": "Direct competitors monetize heavily: FreshBooks charges $17–55/month, Invoice Simple $9.99/month, Wave earns via payment processing fees (2.9% + $0.30 per transaction). A free tool captures high-intent traffic and monetizes via display ads ($5–12 CPM from a finance/business audience), a one-time 'Pro unlock' for custom templates and branding ($4.99), and affiliate commissions from accounting tools like QuickBooks and FreshBooks.",
-  "why_easy": "100% static HTML/CSS/JS — all invoice logic runs client-side. jsPDF (CDN) converts the live HTML preview to a pixel-perfect PDF with one function call. html2canvas handles PNG export. LocalStorage persists drafts between sessions. No database, no auth, no server — deployable to GitHub Pages, Netlify, or any static host instantly.",
-  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/billflow",
-  "demo_path": "demos/billflow/index.html",
-  "created_at": "2026-05-30T00:00:00Z"
+  "name": "invoicelite",
+  "idea": "InvoiceLite is a free, browser-only invoice generator that lets freelancers and small businesses create, customize, and download professional PDF invoices in seconds — no sign-up, no account, no data ever leaves the browser.",
+  "why_trending": "The global gig economy surpassed 1.5 billion workers in 2026 and 'free invoice generator' is one of the highest-volume commercial-intent search queries in the productivity tools category (estimated 100K+ monthly US searches). Multiple incumbents (InvoiceMaker, Invoice Ninja, FreshBooks) charge $10–30/month, leaving a large audience actively searching for a free alternative — confirmed by micro-SaaS trend reports from May/June 2026 showing solopreneurs as the #1 underserved segment for lightweight billing utilities.",
+  "why_profitable": "Monetizes via Google AdSense display ads targeting a high-value finance/business audience (CPMs of $8–15), plus a future 'Pro' one-time purchase ($9) unlocking custom logo uploads, multiple color themes, and persistent client history — a proven freemium pattern used by PDF utility tools with 5–7% paid conversion rates. Affiliate commissions from QuickBooks and FreshBooks referrals add a passive revenue layer.",
+  "why_easy": "100% static HTML/CSS/JS — all invoice logic runs client-side with vanilla JS. jsPDF (loaded from cdnjs CDN) renders a branded, accent-colored PDF with one function call. LocalStorage persists invoice history across sessions. The share-link feature base64-encodes full invoice state into the URL query string for serverless sharing. No database, no auth, no build step — deployable to GitHub Pages as a single index.html.",
+  "repo_url": "https://github.com/PepeGoat/invoicelite",
+  "demo_path": "demos/invoicelite/index.html",
+  "created_at": "2026-06-01T02:20:00Z"
 }
