@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ResumeKit — a free, privacy-first resume builder with live preview and one-click PDF export. No signup. No backend. Just your resume." />
+  <title>ResumeKit — Build Your Career</title>
+
+  <!-- jsPDF for client-side PDF generation -->
+  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #dbeafe;
+      --ink: #0f172a;
+      --body: #334155;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --white: #ffffff;
+      --radius: 10px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--body);
+      background: var(--bg);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 { color: var(--ink); line-height: 1.25; }
+
+    /* ---------- Header ---------- */
+    .site-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo-mark {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+      display: grid; place-items: center;
+      color: #fff; font-weight: 800; font-size: 18px;
+      box-shadow: var(--shadow-md);
+      flex-shrink: 0;
+    }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .brand-name { font-size: 19px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+    .brand-tag { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      font: inherit;
+      font-weight: 600;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: var(--shadow-sm); }
+    .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
+    .btn-outline { background: var(--white); color: var(--primary); border-color: var(--line); }
+    .btn-outline:hover { border-color: var(--primary); background: var(--primary-light); }
+    .btn-ghost { background: transparent; color: var(--body); border-color: var(--line); }
+    .btn-ghost:hover { background: var(--bg); }
+    .btn-sm { padding: 6px 12px; font-size: 13px; }
+    .btn-block { width: 100%; justify-content: center; padding: 13px; font-size: 15px; }
+
+    /* ---------- Layout ---------- */
+    .app {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ---------- Editor ---------- */
+    .editor { padding: 4px; }
+    .editor-scroll { padding: 20px; max-height: calc(100vh - 140px); overflow-y: auto; }
+
+    .section { margin-bottom: 26px; }
+    .section:last-child { margin-bottom: 8px; }
+    .section-head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .section-head h3 { font-size: 15px; font-weight: 700; }
+    .section-icon {
+      width: 26px; height: 26px; border-radius: 7px;
+      background: var(--primary-light); color: var(--primary);
+      display: grid; place-items: center; font-size: 14px;
+    }
+
+    .field { margin-bottom: 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 5px;
+      letter-spacing: 0.2px;
+    }
+    input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+      width: 100%;
+      font: inherit;
+      font-size: 14px;
+      color: var(--ink);
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    textarea { resize: vertical; min-height: 76px; }
+
+    .entry {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fcfdff;
+      position: relative;
+    }
+    .entry-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+    .entry-title { font-size: 13px; font-weight: 700; color: var(--body); }
+    .remove-btn {
+      background: transparent; border: none; color: #ef4444;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      padding: 4px 8px; border-radius: 6px; transition: background 0.15s;
+    }
+    .remove-btn:hover { background: #fef2f2; }
+
+    .add-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font: inherit; font-size: 13.5px; font-weight: 600;
+      color: var(--primary); background: var(--primary-light);
+      border: 1px dashed var(--primary);
+      border-radius: 8px; padding: 9px 14px; cursor: pointer;
+      transition: background 0.15s; width: 100%; justify-content: center;
+    }
+    .add-btn:hover { background: #cfe0fd; }
+
+    /* ---------- Template picker ---------- */
+    .template-row { display: flex; gap: 10px; }
+    .tpl-option {
+      flex: 1;
+      border: 2px solid var(--line);
+      border-radius: 9px;
+      padding: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      background: var(--white);
+    }
+    .tpl-option:hover { border-color: var(--primary); }
+    .tpl-option.active { border-color: var(--primary); background: var(--primary-light); }
+    .tpl-preview {
+      height: 54px; border-radius: 5px; margin-bottom: 8px;
+      display: flex; flex-direction: column; gap: 3px; padding: 7px; overflow: hidden;
+    }
+    .tpl-preview.classic { background: #fff; border: 1px solid var(--line); align-items: center; }
+    .tpl-preview.classic .bar { background: #cbd5e1; }
+    .tpl-preview.classic .bar.t { width: 50%; height: 6px; background: #475569; }
+    .tpl-preview.modern { background: #fff; border: 1px solid var(--line); }
+    .tpl-preview.modern .bar { background: #cbd5e1; }
+    .tpl-preview.modern .bar.t { width: 60%; height: 6px; background: var(--primary); }
+    .tpl-preview .bar { width: 100%; height: 3px; border-radius: 2px; }
+    .tpl-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+    /* ---------- Preview ---------- */
+    .preview-wrap { position: sticky; top: 92px; }
+    .preview-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px; border-bottom: 1px solid var(--line);
+    }
+    .preview-bar h3 { font-size: 14px; }
+    .preview-scroll {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      padding: 28px;
+      background: #eef2f7;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    /* The resume "paper" */
+    #resume {
+      background: #fff;
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+      box-shadow: var(--shadow-lg);
+      border-radius: 4px;
+      padding: 44px 48px;
+      color: #1e293b;
+      font-size: 13px;
+      min-height: 700px;
+    }
+
+    /* Classic template */
+    #resume.classic { text-align: left; }
+    #resume.classic .r-name { text-align: center; font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
+    #resume.classic .r-contact { text-align: center; color: #475569; font-size: 12px; margin-top: 6px; }
+    #resume.classic .r-section-title {
+      font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+      color: #0f172a; border-bottom: 2px solid #0f172a; padding-bottom: 3px; margin: 20px 0 10px;
+    }
+
+    /* Modern template */
+    #resume.modern .r-name { font-size: 28px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+    #resume.modern .r-contact { color: #475569; font-size: 12px; margin-top: 6px; }
+    #resume.modern .r-section-title {
+      font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--primary); margin: 20px 0 10px;
+      border-left: 4px solid var(--primary); padding-left: 10px;
+    }
+
+    .r-divider { height: 2px; background: var(--primary); margin-top: 12px; border-radius: 2px; }
+    #resume.classic .r-divider { display: none; }
+
+    .r-summary { color: #334155; font-size: 12.5px; }
+    .r-item { margin-bottom: 13px; }
+    .r-item-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .r-item-title { font-weight: 700; color: #0f172a; font-size: 13px; }
+    .r-item-sub { color: var(--primary); font-weight: 600; font-size: 12.5px; }
+    #resume.classic .r-item-sub { color: #475569; }
+    .r-item-date { color: #64748b; font-size: 11.5px; font-style: italic; white-space: nowrap; }
+    .r-item-desc { color: #334155; font-size: 12px; margin-top: 3px; white-space: pre-wrap; }
+    .r-skills { display: flex; flex-wrap: wrap; gap: 7px; }
+    .r-skill {
+      font-size: 11.5px; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 11px; border-radius: 20px; font-weight: 600;
+    }
+    #resume.classic .r-skill { background: #f1f5f9; color: #334155; }
+    .r-empty { color: #94a3b8; font-style: italic; }
+
+    /* ---------- Footer ---------- */
+    .site-footer {
+      background: var(--white);
+      border-top: 1px solid var(--line);
+      margin-top: 16px;
+    }
+    .footer-inner {
+      max-width: 1320px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--ink); }
+    .footer-tag { color: var(--muted); font-size: 13.5px; }
+    .footer-mini-logo {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+      display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 13px;
+    }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(120px);
+      background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; box-shadow: var(--shadow-lg);
+      transition: transform 0.3s ease; z-index: 100;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 960px) {
+      .app { grid-template-columns: 1fr; }
+      .preview-wrap { position: static; }
+      .editor-scroll, .preview-scroll { max-height: none; }
+      .brand-tag { display: none; }
+      .header-actions .label-hide { display: none; }
+    }
+    @media (max-width: 520px) {
+      .header-inner, .app, .footer-inner { padding-left: 16px; padding-right: 16px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      #resume { padding: 28px 24px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo-mark">RK</div>
+        <div class="brand-text">
+          <span class="brand-name">ResumeKit</span>
+          <span class="brand-tag">Build Your Career</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" id="loadSampleBtn">Load sample</button>
+        <button class="btn btn-outline btn-sm" id="resetBtn">Reset</button>
+        <button class="btn btn-primary" id="downloadBtnTop">
+          <span>&#8595;</span><span class="label-hide">Download PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== APP ===================== -->
+  <main class="app">
+
+    <!-- ------- Editor ------- -->
+    <section class="panel editor" aria-label="Resume editor">
+      <div class="editor-scroll">
+
+        <!-- Template picker -->
+        <div class="section">
+          <div class="section-head">
+            <span class="section-icon">&#9703;</span>
+            <h3>Template</h3>
+          </div>
+          <div class="template-row" id="templateRow">
+            <div class="tpl-option active" data-tpl="classic">
+              <div class="tpl-preview classic">
+                <span class="bar t"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              </div>
+              <span class="tpl-name">Classic</span>
+            </div>
+            <div class="tpl-option" data-tpl="modern">
+              <div class="tpl-preview modern">
+                <span class="bar t"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              </div>
+              <span class="tpl-name">Modern</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal info -->
+        <div class="section">
+          <div class="section-head">
+            <span class="section-icon">&#128100;</span>
+            <h3>Personal Information</h3>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" data-bind placeholder="Jane Doe" />
+            </div>
+            <div class="field">
+              <label for="title">Professional Title</label>
+              <input type="text" id="title" data-bind placeholder="Senior Product Designer" />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="email">Email</label>
+              <input type="email" id="email" data-bind placeholder="jane@example.com" />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" data-bind placeholder="(555) 123-4567" />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="location">Location</label>
+              <input type="text" id="location" data-bind placeholder="San Francisco, CA" />
+            </div>
+            <div class="field">
+              <label for="linkedin">LinkedIn</label>
+              <input type="text" id="linkedin" data-bind placeholder="linkedin.com/in/janedoe" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="website">Website / Portfolio</label>
+            <input type="text" id="website" data-bind placeholder="janedoe.com" />
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+          <div class="section-head">
+            <span class="section-icon">&#9998;</span>
+            <h3>Professional Summary</h3>
+          </div>
+          <div class="field">
+            <textarea id="summary" data-bind placeholder="A concise 2-3 sentence overview of your experience, strengths, and goals."></textarea>
+          </div>
+        </div>
+
+        <!-- Work experience -->
+        <div class="section">
+          <div class="section-head">
+            <span class="section-icon">&#128188;</span>
+            <h3>Work Experience</h3>
+          </div>
+          <div id="experienceList"></div>
+          <button class="add-btn" id="addExperience">&#43; Add Experience</button>
+        </div>
+
+        <!-- Education -->
+        <div class="section">
+          <div class="section-head">
+            <span class="section-icon">&#127891;</span>
+            <h3>Education</h3>
+          </div>
+          <div id="educationList"></div>
+          <button class="add-btn" id="addEducation">&#43; Add Education</button>
+        </div>
+
+        <!-- Skills -->
+        <div class="section">
+          <div class="section-head">
+            <span class="section-icon">&#9889;</span>
+            <h3>Skills</h3>
+          </div>
+          <div class="field">
+            <label for="skills">Skills (comma-separated)</label>
+            <input type="text" id="skills" data-bind placeholder="JavaScript, Figma, Leadership, Public Speaking" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="downloadBtn">&#8595; Download PDF</button>
+      </div>
+    </section>
+
+    <!-- ------- Preview ------- -->
+    <section class="panel preview-wrap" aria-label="Live preview">
+      <div class="preview-bar">
+        <h3>Live Preview</h3>
+        <button class="btn btn-outline btn-sm" id="downloadBtnPreview">&#8595; PDF</button>
+      </div>
+      <div class="preview-scroll">
+        <div id="resume" class="classic"><!-- rendered by JS --></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mini-logo">RK</span>
+        <span>ResumeKit</span>
+      </div>
+      <p class="footer-tag">Free, private, and powered entirely in your browser — your data never leaves your device.</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- ===================== SCRIPT ===================== -->
+  <script>
+  (function () {
+    "use strict";
+
+    /* ---------- State ---------- */
+    var state = {
+      template: "classic",
+      personal: { name: "", title: "", email: "", phone: "", location: "", linkedin: "", website: "" },
+      summary: "",
+      experience: [],
+      education: [],
+      skills: ""
+    };
+
+    var uid = 0;
+    function nextId() { return "id_" + (++uid); }
+
+    /* ---------- DOM helpers ---------- */
+    function $(sel, root) { return (root || document).querySelector(sel); }
+    function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+    function esc(s) {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /* ---------- Template selection ---------- */
+    $all(".tpl-option").forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        $all(".tpl-option").forEach(function (o) { o.classList.remove("active"); });
+        opt.classList.add("active");
+        state.template = opt.getAttribute("data-tpl");
+        render();
+        save();
+      });
+    });
+
+    /* ---------- Bind simple fields ---------- */
+    $all("[data-bind]").forEach(function (input) {
+      input.addEventListener("input", function () {
+        var id = input.id;
+        if (id in state.personal) {
+          state.personal[id] = input.value;
+        } else if (id === "summary") {
+          state.summary = input.value;
+        } else if (id === "skills") {
+          state.skills = input.value;
+        }
+        render();
+        save();
+      });
+    });
+
+    /* ---------- Experience entries ---------- */
+    function addExperience(data) {
+      data = data || {};
+      state.experience.push({
+        id: nextId(),
+        role: data.role || "",
+        company: data.company || "",
+        date: data.date || "",
+        desc: data.desc || ""
+      });
+    }
+
+    function renderExperienceForm() {
+      var list = $("#experienceList");
+      list.innerHTML = "";
+      state.experience.forEach(function (exp, i) {
+        var el = document.createElement("div");
+        el.className = "entry";
+        el.innerHTML =
+          '<div class="entry-head">' +
+            '<span class="entry-title">Experience ' + (i + 1) + '</span>' +
+            '<button class="remove-btn" data-remove-exp="' + exp.id + '">Remove</button>' +
+          '</div>' +
+          '<div class="grid-2">' +
+            '<div class="field"><label>Job Title</label><input type="text" data-exp="role" data-id="' + exp.id + '" value="' + esc(exp.role) + '" placeholder="Product Designer"></div>' +
+            '<div class="field"><label>Company</label><input type="text" data-exp="company" data-id="' + exp.id + '" value="' + esc(exp.company) + '" placeholder="Acme Inc."></div>' +
+          '</div>' +
+          '<div class="field"><label>Dates</label><input type="text" data-exp="date" data-id="' + exp.id + '" value="' + esc(exp.date) + '" placeholder="Jan 2021 - Present"></div>' +
+          '<div class="field"><label>Description</label><textarea data-exp="desc" data-id="' + exp.id + '" placeholder="Key achievements and responsibilities.">' + esc(exp.desc) + '</textarea></div>';
+        list.appendChild(el);
+      });
+      wireEntryInputs("exp", state.experience);
+      $all("[data-remove-exp]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var id = b.getAttribute("data-remove-exp");
+          state.experience = state.experience.filter(function (x) { return x.id !== id; });
+          renderExperienceForm(); render(); save();
+        });
+      });
+    }
+
+    /* ---------- Education entries ---------- */
+    function addEducation(data) {
+      data = data || {};
+      state.education.push({
+        id: nextId(),
+        degree: data.degree || "",
+        school: data.school || "",
+        date: data.date || "",
+        desc: data.desc || ""
+      });
+    }
+
+    function renderEducationForm() {
+      var list = $("#educationList");
+      list.innerHTML = "";
+      state.education.forEach(function (ed, i) {
+        var el = document.createElement("div");
+        el.className = "entry";
+        el.innerHTML =
+          '<div class="entry-head">' +
+            '<span class="entry-title">Education ' + (i + 1) + '</span>' +
+            '<button class="remove-btn" data-remove-edu="' + ed.id + '">Remove</button>' +
+          '</div>' +
+          '<div class="grid-2">' +
+            '<div class="field"><label>Degree</label><input type="text" data-edu="degree" data-id="' + ed.id + '" value="' + esc(ed.degree) + '" placeholder="B.S. Computer Science"></div>' +
+            '<div class="field"><label>School</label><input type="text" data-edu="school" data-id="' + ed.id + '" value="' + esc(ed.school) + '" placeholder="State University"></div>' +
+          '</div>' +
+          '<div class="field"><label>Dates</label><input type="text" data-edu="date" data-id="' + ed.id + '" value="' + esc(ed.date) + '" placeholder="2015 - 2019"></div>' +
+          '<div class="field"><label>Details (optional)</label><textarea data-edu="desc" data-id="' + ed.id + '" placeholder="Honors, GPA, relevant coursework.">' + esc(ed.desc) + '</textarea></div>';
+        list.appendChild(el);
+      });
+      wireEntryInputs("edu", state.education);
+      $all("[data-remove-edu]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var id = b.getAttribute("data-remove-edu");
+          state.education = state.education.filter(function (x) { return x.id !== id; });
+          renderEducationForm(); render(); save();
+        });
+      });
+    }
+
+    function wireEntryInputs(kind, arr) {
+      var attr = "data-" + kind;
+      $all("[" + attr + "]").forEach(function (input) {
+        input.addEventListener("input", function () {
+          var field = input.getAttribute(attr);
+          var id = input.getAttribute("data-id");
+          var item = arr.filter(function (x) { return x.id === id; })[0];
+          if (item) { item[field] = input.value; render(); save(); }
+        });
+      });
+    }
+
+    $("#addExperience").addEventListener("click", function () {
+      addExperience(); renderExperienceForm(); render(); save();
+    });
+    $("#addEducation").addEventListener("click", function () {
+      addEducation(); renderEducationForm(); render(); save();
+    });
+
+    /* ---------- Render live preview ---------- */
+    function contactLine() {
+      var p = state.personal;
+      var parts = [p.email, p.phone, p.location, p.linkedin, p.website].filter(function (x) { return x && x.trim(); });
+      return parts.map(esc).join("  &bull;  ");
+    }
+
+    function render() {
+      var p = state.personal;
+      var r = $("#resume");
+      r.className = state.template;
+
+      var html = "";
+      html += '<div class="r-name">' + (p.name ? esc(p.name) : '<span class="r-empty">Your Name</span>') + '</div>';
+      if (p.title) html += '<div class="r-item-sub" style="margin-top:2px;">' + esc(p.title) + '</div>';
+      var c = contactLine();
+      html += '<div class="r-contact">' + (c || '<span class="r-empty">email &bull; phone &bull; location</span>') + '</div>';
+      html += '<div class="r-divider"></div>';
+
+      if (state.summary && state.summary.trim()) {
+        html += '<div class="r-section-title">Summary</div>';
+        html += '<div class="r-summary">' + esc(state.summary) + '</div>';
+      }
+
+      var exps = state.experience.filter(function (e) { return e.role || e.company || e.desc; });
+      if (exps.length) {
+        html += '<div class="r-section-title">Experience</div>';
+        exps.forEach(function (e) {
+          html += '<div class="r-item">';
+          html += '<div class="r-item-head"><div>';
+          if (e.role) html += '<span class="r-item-title">' + esc(e.role) + '</span>';
+          if (e.company) html += '<span class="r-item-sub">' + (e.role ? '  &mdash;  ' : '') + esc(e.company) + '</span>';
+          html += '</div>';
+          if (e.date) html += '<span class="r-item-date">' + esc(e.date) + '</span>';
+          html += '</div>';
+          if (e.desc) html += '<div class="r-item-desc">' + esc(e.desc) + '</div>';
+          html += '</div>';
+        });
+      }
+
+      var eds = state.education.filter(function (e) { return e.degree || e.school || e.desc; });
+      if (eds.length) {
+        html += '<div class="r-section-title">Education</div>';
+        eds.forEach(function (e) {
+          html += '<div class="r-item">';
+          html += '<div class="r-item-head"><div>';
+          if (e.degree) html += '<span class="r-item-title">' + esc(e.degree) + '</span>';
+          if (e.school) html += '<span class="r-item-sub">' + (e.degree ? '  &mdash;  ' : '') + esc(e.school) + '</span>';
+          html += '</div>';
+          if (e.date) html += '<span class="r-item-date">' + esc(e.date) + '</span>';
+          html += '</div>';
+          if (e.desc) html += '<div class="r-item-desc">' + esc(e.desc) + '</div>';
+          html += '</div>';
+        });
+      }
+
+      var skills = state.skills.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+      if (skills.length) {
+        html += '<div class="r-section-title">Skills</div>';
+        html += '<div class="r-skills">' + skills.map(function (s) {
+          return '<span class="r-skill">' + esc(s) + '</span>';
+        }).join("") + '</div>';
+      }
+
+      r.innerHTML = html;
+    }
+
+    /* ---------- Persistence ---------- */
+    var STORE_KEY = "resumekit.v1";
+    function save() {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+    function load() {
+      try {
+        var raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return false;
+        var data = JSON.parse(raw);
+        if (!data) return false;
+        state.template = data.template || "classic";
+        state.personal = Object.assign(state.personal, data.personal || {});
+        state.summary = data.summary || "";
+        state.skills = data.skills || "";
+        state.experience = (data.experience || []).map(function (e) { e.id = nextId(); return e; });
+        state.education = (data.education || []).map(function (e) { e.id = nextId(); return e; });
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function syncFormFromState() {
+      Object.keys(state.personal).forEach(function (k) {
+        var el = document.getElementById(k);
+        if (el) el.value = state.personal[k];
+      });
+      $("#summary").value = state.summary;
+      $("#skills").value = state.skills;
+      $all(".tpl-option").forEach(function (o) {
+        o.classList.toggle("active", o.getAttribute("data-tpl") === state.template);
+      });
+      renderExperienceForm();
+      renderEducationForm();
+    }
+
+    /* ---------- Toast ---------- */
+    var toastTimer;
+    function toast(msg) {
+      var t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+    }
+
+    /* ---------- PDF generation ---------- */
+    function generatePDF() {
+      var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+      if (!jsPDFCtor) { toast("PDF library failed to load."); return; }
+
+      var doc = new jsPDFCtor({ unit: "pt", format: "letter" });
+      var pageW = doc.internal.pageSize.getWidth();
+      var pageH = doc.internal.pageSize.getHeight();
+      var margin = 54;
+      var maxW = pageW - margin * 2;
+      var y = margin;
+      var isModern = state.template === "modern";
+      var accent = [37, 99, 235];
+
+      function ensureSpace(needed) {
+        if (y + needed > pageH - margin) { doc.addPage(); y = margin; }
+      }
+      function setColor(rgb) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
+
+      var p = state.personal;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(22);
+      if (isModern) setColor(accent); else setColor([15, 23, 42]);
+      var name = p.name || "Your Name";
+      if (isModern) {
+        doc.text(name, margin, y);
+      } else {
+        doc.text(name, pageW / 2, y, { align: "center" });
+      }
+      y += 18;
+
+      if (p.title) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        setColor([71, 85, 105]);
+        if (isModern) doc.text(p.title, margin, y);
+        else doc.text(p.title, pageW / 2, y, { align: "center" });
+        y += 14;
+      }
+
+      var contact = [p.email, p.phone, p.location, p.linkedin, p.website].filter(function (x) { return x && x.trim(); }).join("  |  ");
+      if (contact) {
+        doc.setFontSize(9.5);
+        setColor([71, 85, 105]);
+        var cLines = doc.splitTextToSize(contact, maxW);
+        if (isModern) doc.text(cLines, margin, y);
+        else doc.text(cLines, pageW / 2, y, { align: "center" });
+        y += cLines.length * 12;
+      }
+      y += 6;
+
+      if (isModern) {
+        doc.setDrawColor(accent[0], accent[1], accent[2]);
+        doc.setLineWidth(2);
+        doc.line(margin, y, pageW - margin, y);
+        y += 14;
+      } else {
+        y += 4;
+      }
+
+      function sectionTitle(label) {
+        ensureSpace(34);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        if (isModern) {
+          setColor(accent);
+          doc.text(label.toUpperCase(), margin, y);
+          y += 4;
+          doc.setDrawColor(accent[0], accent[1], accent[2]);
+          doc.setLineWidth(0.5);
+        } else {
+          setColor([15, 23, 42]);
+          doc.text(label.toUpperCase(), margin, y);
+          y += 4;
+          doc.setDrawColor(15, 23, 42);
+          doc.setLineWidth(1);
+        }
+        doc.line(margin, y, pageW - margin, y);
+        y += 14;
+      }
+
+      function bodyText(text, opts) {
+        opts = opts || {};
+        doc.setFont("helvetica", opts.bold ? "bold" : (opts.italic ? "italic" : "normal"));
+        doc.setFontSize(opts.size || 10);
+        setColor(opts.color || [51, 65, 85]);
+        var lines = doc.splitTextToSize(text, opts.width || maxW);
+        lines.forEach(function (ln) {
+          ensureSpace(14);
+          doc.text(ln, opts.x != null ? opts.x : margin, y);
+          y += (opts.lh || 13);
+        });
+      }
+
+      if (state.summary && state.summary.trim()) {
+        sectionTitle("Summary");
+        bodyText(state.summary.trim(), { size: 10, lh: 13 });
+        y += 8;
+      }
+
+      var exps = state.experience.filter(function (e) { return e.role || e.company || e.desc; });
+      if (exps.length) {
+        sectionTitle("Experience");
+        exps.forEach(function (e) {
+          ensureSpace(30);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10.5);
+          setColor([15, 23, 42]);
+          var heading = [e.role, e.company].filter(Boolean).join(" - ");
+          var dateW = 0;
+          if (e.date) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(9);
+            setColor([100, 116, 139]);
+            dateW = doc.getTextWidth(e.date) + 8;
+            doc.text(e.date, pageW - margin, y, { align: "right" });
+          }
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10.5);
+          setColor(isModern ? accent : [15, 23, 42]);
+          var hLines = doc.splitTextToSize(heading, maxW - dateW);
+          doc.text(hLines, margin, y);
+          y += hLines.length * 13;
+          if (e.desc) {
+            bodyText(e.desc.trim(), { size: 9.5, lh: 12, color: [51, 65, 85] });
+          }
+          y += 8;
+        });
+      }
+
+      var eds = state.education.filter(function (e) { return e.degree || e.school || e.desc; });
+      if (eds.length) {
+        sectionTitle("Education");
+        eds.forEach(function (e) {
+          ensureSpace(26);
+          var heading = [e.degree, e.school].filter(Boolean).join(" - ");
+          var dateW = 0;
+          if (e.date) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(9);
+            setColor([100, 116, 139]);
+            dateW = doc.getTextWidth(e.date) + 8;
+            doc.text(e.date, pageW - margin, y, { align: "right" });
+          }
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10.5);
+          setColor(isModern ? accent : [15, 23, 42]);
+          var hLines = doc.splitTextToSize(heading, maxW - dateW);
+          doc.text(hLines, margin, y);
+          y += hLines.length * 13;
+          if (e.desc) bodyText(e.desc.trim(), { size: 9.5, lh: 12, color: [51, 65, 85] });
+          y += 8;
+        });
+      }
+
+      var skills = state.skills.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+      if (skills.length) {
+        sectionTitle("Skills");
+        bodyText(skills.join("  -  "), { size: 10, lh: 14 });
+      }
+
+      var fileName = (p.name ? p.name.replace(/[^a-z0-9]+/gi, "_") : "resume") + "_resume.pdf";
+      doc.save(fileName);
+      toast("PDF downloaded");
+    }
+
+    [$("#downloadBtn"), $("#downloadBtnTop"), $("#downloadBtnPreview")].forEach(function (b) {
+      if (b) b.addEventListener("click", generatePDF);
+    });
+
+    /* ---------- Sample / reset ---------- */
+    function sampleData() {
+      state.template = "modern";
+      state.personal = {
+        name: "Jane Doe",
+        title: "Senior Product Designer",
+        email: "jane.doe@example.com",
+        phone: "(555) 123-4567",
+        location: "San Francisco, CA",
+        linkedin: "linkedin.com/in/janedoe",
+        website: "janedoe.design"
+      };
+      state.summary = "Product designer with 8+ years crafting intuitive digital experiences for fast-growing SaaS companies. Passionate about design systems, accessibility, and turning complex problems into elegant solutions.";
+      state.experience = [];
+      addExperience({
+        role: "Senior Product Designer", company: "Acme Inc.", date: "Jan 2021 - Present",
+        desc: "Led end-to-end redesign of the core dashboard, increasing engagement by 34%.\nBuilt and maintained a 200+ component design system adopted across 6 teams.\nMentored 4 junior designers and ran weekly design critiques."
+      });
+      addExperience({
+        role: "Product Designer", company: "Bright Labs", date: "Jun 2018 - Dec 2020",
+        desc: "Designed mobile onboarding flow that lifted activation by 22%.\nPartnered with engineering to ship accessible, responsive interfaces."
+      });
+      state.education = [];
+      addEducation({
+        degree: "B.F.A. Graphic Design", school: "State University", date: "2014 - 2018",
+        desc: "Graduated with honors. President of the Design Club."
+      });
+      state.skills = "Figma, Design Systems, Prototyping, User Research, Accessibility, HTML/CSS, Leadership";
+    }
+
+    $("#loadSampleBtn").addEventListener("click", function () {
+      sampleData();
+      syncFormFromState();
+      render(); save();
+      toast("Sample resume loaded");
+    });
+
+    $("#resetBtn").addEventListener("click", function () {
+      if (!confirm("Clear all fields and start over?")) return;
+      state.template = "classic";
+      state.personal = { name: "", title: "", email: "", phone: "", location: "", linkedin: "", website: "" };
+      state.summary = ""; state.skills = "";
+      state.experience = []; state.education = [];
+      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      syncFormFromState();
+      render();
+      toast("Reset complete");
+    });
+
+    /* ---------- Init ---------- */
+    function init() {
+      var loaded = load();
+      if (!loaded) {
+        addExperience();
+        addEducation();
+      }
+      syncFormFromState();
+      render();
+    }
+
+    init();
+  })();
+  </script>
+</body>
+</html>
