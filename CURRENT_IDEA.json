@@ -1,11 +1,11 @@
 {
   "status": "pending_review",
-  "name": "resumekit",
-  "idea": "ResumeKit is a free, browser-only resume builder with live preview, Classic and Modern templates, and one-click PDF export — no signup required, no data ever leaves the device, built for job seekers who want a professional resume in minutes.",
-  "why_trending": "'Free resume builder' is one of the highest-volume search queries in the career tools category (estimated 500K+ monthly US searches). The job market volatility throughout 2025-2026 has driven a surge in resume-building activity; tools like Zety, Resume.io, and Canva all monetize this demand at $15-40/month, leaving a massive audience searching for a genuinely free, no-sign-up alternative. A January 2026 Hacker News post about 1,300 free client-side calculators went viral, confirming strong appetite for ad-free browser tools in this category.",
-  "why_profitable": "Monetizes via Google AdSense targeting high-intent job-seeker traffic (CPMs $6-12 for career/jobs audience). A future 'Pro' tier ($7 one-time) unlocks additional templates, custom accent colors, and multi-page export. Affiliate partnerships with LinkedIn Premium and resume-review services add passive revenue. Comparable tools (Zety, Resume.io) convert 3-8% of free users to paid at $15-40/month.",
-  "why_easy": "100% static HTML/CSS/JS with zero backend — jsPDF (loaded from unpkg CDN) generates the PDF entirely client-side. LocalStorage persists resume data across sessions with no database. The entire app is a single index.html file deployable to GitHub Pages, Netlify, or any static host in under a minute. No build step, no npm, no auth.",
-  "repo_url": "https://github.com/PepeGoat/idea-queue/tree/main/demos/resumekit",
-  "demo_path": "demos/resumekit/index.html",
-  "created_at": "2026-06-04T02:15:00Z"
+  "name": "billcraft",
+  "idea": "BillCraft is a free, browser-only professional invoice generator that lets freelancers and small businesses create, customize, and download polished PDF invoices in seconds — no signup, no backend, no data ever leaves the device.",
+  "why_trending": "Freelance economy searches are surging in 2026: NerdWallet, Jobbers.io, and Conta all published 'best invoice software for freelancers 2026' roundups this month, signaling massive search-intent. Wave, Invoice Fly, and FreshBooks dominate but charge $10-50/month, leaving millions of solopreneurs searching for a genuinely free, no-friction alternative. 'Free invoice generator' sees 400K+ monthly US searches with high commercial intent.",
+  "why_profitable": "Monetizes via Google AdSense targeting high-intent freelancer/small-business traffic (CPMs $8-15 for B2B/finance audience). A 'Pro' upgrade ($9 one-time) unlocks additional templates, logo upload, and recurring invoice scheduling. Affiliate links to FreshBooks, QuickBooks, and Wave for users who outgrow the free tool add passive revenue. Comparable tools (Invoice Ninja, Zoho Invoice) convert 5-10% of free users to paid.",
+  "why_easy": "100% static HTML/CSS/JS with zero backend — jsPDF (loaded from cdnjs CDN) generates print-quality PDFs entirely client-side. LocalStorage persists drafts across sessions with no database. The entire app is a single index.html file: customizable accent colors, 5 templates, line items with per-item tax rates, global discount, shipping, and bank/payment details. Deployable to GitHub Pages or Netlify in under a minute.",
+  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/billcraft",
+  "demo_path": "demos/billcraft/index.html",
+  "created_at": "2026-06-05T02:17:00Z"
 }
