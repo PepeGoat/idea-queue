@@ -1,11 +1,12 @@
 {
   "status": "pending_review",
-  "name": "billcraft",
-  "idea": "BillCraft is a free, browser-only professional invoice generator that lets freelancers and small businesses create, customize, and download polished PDF invoices in seconds — no signup, no backend, no data ever leaves the device.",
-  "why_trending": "Freelance economy searches are surging in 2026: NerdWallet, Jobbers.io, and Conta all published 'best invoice software for freelancers 2026' roundups this month, signaling massive search-intent. Wave, Invoice Fly, and FreshBooks dominate but charge $10-50/month, leaving millions of solopreneurs searching for a genuinely free, no-friction alternative. 'Free invoice generator' sees 400K+ monthly US searches with high commercial intent.",
-  "why_profitable": "Monetizes via Google AdSense targeting high-intent freelancer/small-business traffic (CPMs $8-15 for B2B/finance audience). A 'Pro' upgrade ($9 one-time) unlocks additional templates, logo upload, and recurring invoice scheduling. Affiliate links to FreshBooks, QuickBooks, and Wave for users who outgrow the free tool add passive revenue. Comparable tools (Invoice Ninja, Zoho Invoice) convert 5-10% of free users to paid.",
-  "why_easy": "100% static HTML/CSS/JS with zero backend — jsPDF (loaded from cdnjs CDN) generates print-quality PDFs entirely client-side. LocalStorage persists drafts across sessions with no database. The entire app is a single index.html file: customizable accent colors, 5 templates, line items with per-item tax rates, global discount, shipping, and bank/payment details. Deployable to GitHub Pages or Netlify in under a minute.",
-  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/billcraft",
-  "demo_path": "demos/billcraft/index.html",
-  "created_at": "2026-06-05T02:17:00Z"
+  "name": "voicedraft",
+  "idea": "VoiceDraft is a browser-based, real-time voice transcription pad powered by the Web Speech API — users speak and their words appear instantly, with session history, multi-format export, and 13+ language support, all 100% client-side. It targets remote workers, note-takers, journalists, and anyone who types slower than they speak.",
+  "why_trending": "Voice-to-text and meeting productivity tools dominate Product Hunt June 2026 — Mina Meeting Assistant received 479,135 votes making it the #2 product of the month, and Wispr Flow (voice dictation) is a featured trending product. The AI meeting assistants market is projected to hit $7.33B by 2035. People are actively searching for free browser-based alternatives to paid tools like Otter.ai and Whisper.",
+  "why_profitable": "Freemium model: free tier with session history capped at 5, paid Pro ($7/month) removes limits and adds cloud sync and speaker diarization. Alternatively, Google AdSense on the free tier monetises the large search traffic for 'free voice to text online'. Comparable tools (Otter.ai at $16.99/mo, Whisper-based SaaS at $10-30/mo) prove strong willingness to pay.",
+  "why_easy": "The Web Speech API (window.SpeechRecognition / window.webkitSpeechRecognition) is fully built into Chrome, Edge, and Safari — zero backend, zero API keys, zero cost. The entire app is a single index.html with vanilla JS: transcription, localStorage session persistence, and file-download exports all run 100% in the browser with no server required.",
+  "repo_url": "https://github.com/pepegoat/voicedraft",
+  "demo_file": "demo/voicedraft/index.html",
+  "note": "Repo pepegoat/voicedraft needs to be manually created on GitHub — the GitHub App token in this session lacks repo-creation (Administration) permission. The full working demo is committed at demo/voicedraft/index.html in this repo and should be moved once the target repo exists.",
+  "created_at": "2026-06-06T02:08:00Z"
 }

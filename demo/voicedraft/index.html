@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceDraft — Speak Your Mind, Instantly</title>
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --surface2: #22222e;
+      --border: #2e2e40;
+      --accent: #7c6af7;
+      --accent-hover: #9080ff;
+      --accent-glow: rgba(124,106,247,0.25);
+      --text: #e8e8f0;
+      --text-muted: #8888a0;
+      --text-dim: #55556a;
+      --danger: #f76a6a;
+      --success: #6af7a0;
+      --warn: #f7c76a;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 60px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), #c06af7);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: var(--accent-glow);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    /* ─── MAIN LAYOUT ─── */
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      flex: 1;
+      min-height: 0;
+    }
+    @media (max-width: 768px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .sidebar.open { display: flex; position: fixed; top: 60px; left: 0; right: 0; bottom: 0; z-index: 99; }
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .btn-new {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-new:hover { background: var(--accent-hover); }
+    .sessions-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .sessions-list::-webkit-scrollbar { width: 4px; }
+    .sessions-list::-webkit-scrollbar-track { background: transparent; }
+    .sessions-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .session-item {
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.12s;
+      border: 1px solid transparent;
+      margin-bottom: 4px;
+    }
+    .session-item:hover { background: var(--surface2); }
+    .session-item.active {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+    }
+    .session-item-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .session-item-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    .session-item-del {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      transition: color 0.12s, background 0.12s;
+      float: right;
+      margin-left: 4px;
+    }
+    .session-item-del:hover { color: var(--danger); background: rgba(247,106,106,0.1); }
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* ─── MAIN EDITOR AREA ─── */
+    .editor-area {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .editor-toolbar {
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .session-name-input {
+      flex: 1;
+      min-width: 160px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 600;
+      outline: none;
+      padding: 4px 0;
+    }
+    .session-name-input::placeholder { color: var(--text-dim); }
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .btn:hover { border-color: var(--text-muted); background: var(--surface); }
+    .btn-icon { padding: 7px; }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-danger { border-color: var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: rgba(247,106,106,0.1); }
+
+    /* ─── TRANSCRIPT EDITOR ─── */
+    .transcript-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .transcript {
+      width: 100%;
+      height: 100%;
+      padding: 1.5rem;
+      background: transparent;
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.75;
+      border: none;
+      resize: none;
+      outline: none;
+      font-family: inherit;
+      overflow-y: auto;
+    }
+    .transcript::-webkit-scrollbar { width: 6px; }
+    .transcript::-webkit-scrollbar-track { background: transparent; }
+    .transcript::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .transcript::placeholder { color: var(--text-dim); font-style: italic; }
+
+    /* interim (grayed-out pending text) overlay */
+    .interim-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 1.5rem 1.5rem;
+      pointer-events: none;
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--text-dim);
+      font-style: italic;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    /* ─── RECORDING CONTROLS ─── */
+    .controls {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .record-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      background: var(--accent-glow);
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    .record-btn:hover {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 0 6px var(--accent-glow);
+    }
+    .record-btn.recording {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white;
+      animation: pulse 1.4s ease infinite;
+    }
+    .record-btn.recording:hover {
+      box-shadow: 0 0 0 6px rgba(247,106,106,0.25);
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(247,106,106,0.5); }
+      50% { box-shadow: 0 0 0 10px rgba(247,106,106,0); }
+    }
+    .controls-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .status-text {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .status-text.active { color: var(--success); }
+    .status-text.recording { color: var(--danger); }
+    .status-subtext {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    .waveform {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 24px;
+    }
+    .wave-bar {
+      width: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+      animation: wave 0.8s ease-in-out infinite;
+      opacity: 0.3;
+    }
+    .wave-bar:nth-child(1) { animation-delay: 0s; height: 8px; }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; height: 16px; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; height: 24px; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; height: 16px; }
+    .wave-bar:nth-child(5) { animation-delay: 0.6s; height: 8px; }
+    .wave-bar.active { opacity: 1; }
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.4); }
+      50% { transform: scaleY(1); }
+    }
+    .lang-select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .lang-select:focus { border-color: var(--accent); }
+    .word-count {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* ─── STATS BAR ─── */
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      padding: 8px 1.5rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .stat-val {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ─── TOAST ─── */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 10px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      animation: toastIn 0.25s ease;
+      pointer-events: auto;
+    }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--danger); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── MODAL ─── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow);
+      transform: translateY(16px);
+      transition: transform 0.2s;
+    }
+    .modal-backdrop.open .modal { transform: none; }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .export-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .export-option:hover { border-color: var(--accent); background: var(--accent-glow); }
+    .export-option-info { font-size: 0.88rem; }
+    .export-option-label { font-weight: 600; margin-bottom: 2px; }
+    .export-option-desc { font-size: 0.75rem; color: var(--text-muted); }
+    .export-option-icon { font-size: 1.4rem; }
+
+    /* ─── UNSUPPORTED BANNER ─── */
+    .unsupported-banner {
+      display: none;
+      background: rgba(247,199,106,0.12);
+      border: 1px solid var(--warn);
+      color: var(--warn);
+      padding: 10px 1.5rem;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .footer-text {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .footer-links {
+      display: flex;
+      gap: 1rem;
+    }
+    .footer-link {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-link:hover { color: var(--accent); }
+
+    /* ─── MOBILE TOGGLE ─── */
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 768px) {
+      .mobile-toggle { display: flex; align-items: center; gap: 6px; }
+      footer { display: none; }
+      .stats-bar { display: none; }
+    }
+    @media (max-width: 480px) {
+      header { padding: 0 1rem; }
+      .editor-toolbar { padding: 0.5rem 1rem; }
+      .controls { padding: 0.75rem 1rem; }
+      .transcript { padding: 1rem; font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#">
+    <div class="logo-icon">🎙️</div>
+    VoiceDraft
+  </a>
+  <div class="header-right">
+    <span class="badge">Free</span>
+    <button class="mobile-toggle" id="sidebarToggle">☰ Sessions</button>
+  </div>
+</header>
+
+<!-- UNSUPPORTED BROWSER BANNER -->
+<div class="unsupported-banner" id="unsupportedBanner">
+  ⚠️ Your browser does not support the Web Speech API. Please use Chrome, Edge, or Safari for voice transcription.
+</div>
+
+<!-- MAIN APP -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Sessions</span>
+      <button class="btn-new" id="newSessionBtn">+ New</button>
+    </div>
+    <div class="sessions-list" id="sessionsList">
+      <!-- populated by JS -->
+    </div>
+  </aside>
+
+  <!-- EDITOR AREA -->
+  <div class="editor-area">
+
+    <div class="editor-toolbar">
+      <input
+        class="session-name-input"
+        id="sessionNameInput"
+        type="text"
+        placeholder="Untitled session…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="toolbar-right">
+        <button class="btn" id="exportBtn" title="Export / Download">
+          ↓ Export
+        </button>
+        <button class="btn" id="copyBtn" title="Copy all text">
+          ⎘ Copy
+        </button>
+        <button class="btn btn-danger" id="clearBtn" title="Clear transcript">
+          ✕ Clear
+        </button>
+      </div>
+    </div>
+
+    <div class="transcript-wrapper">
+      <textarea
+        class="transcript"
+        id="transcript"
+        placeholder="Your transcription will appear here. Press the microphone button below to start speaking…"
+        spellcheck="true"
+      ></textarea>
+      <div class="interim-overlay" id="interimOverlay"></div>
+    </div>
+
+    <!-- RECORDING CONTROLS -->
+    <div class="controls">
+      <button class="record-btn" id="recordBtn" title="Start/Stop recording">
+        🎤
+      </button>
+      <div class="controls-info">
+        <div class="status-text" id="statusText">Ready to record</div>
+        <div class="status-subtext" id="statusSubtext">Click the microphone to begin</div>
+        <div class="waveform" id="waveform">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+      </div>
+      <select class="lang-select" id="langSelect" title="Recognition language">
+        <option value="en-US">English (US)</option>
+        <option value="en-GB">English (UK)</option>
+        <option value="es-ES">Español</option>
+        <option value="fr-FR">Français</option>
+        <option value="de-DE">Deutsch</option>
+        <option value="it-IT">Italiano</option>
+        <option value="pt-BR">Português</option>
+        <option value="ja-JP">日本語</option>
+        <option value="zh-CN">中文 (简体)</option>
+        <option value="ko-KR">한국어</option>
+        <option value="ar-SA">العربية</option>
+        <option value="hi-IN">हिन्दी</option>
+        <option value="ru-RU">Русский</option>
+        <option value="nl-NL">Nederlands</option>
+        <option value="pl-PL">Polski</option>
+      </select>
+      <div class="word-count" id="wordCount">0 words</div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat">Duration: <span class="stat-val" id="statDuration">0:00</span></div>
+      <div class="stat">Characters: <span class="stat-val" id="statChars">0</span></div>
+      <div class="stat">Words: <span class="stat-val" id="statWords">0</span></div>
+      <div class="stat">Sentences: <span class="stat-val" id="statSentences">0</span></div>
+      <div class="stat" style="margin-left:auto">Auto-saved <span class="stat-val" id="statSaved">—</span></div>
+    </div>
+
+  </div><!-- /.editor-area -->
+</div><!-- /.app -->
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-text">© 2026 VoiceDraft — 100% private, runs in your browser, no data ever sent to a server.</span>
+  <div class="footer-links">
+    <a class="footer-link" href="#" onclick="showShortcuts(); return false;">Shortcuts</a>
+    <a class="footer-link" href="#" onclick="showAbout(); return false;">About</a>
+  </div>
+</footer>
+
+<!-- EXPORT MODAL -->
+<div class="modal-backdrop" id="exportModal">
+  <div class="modal">
+    <div class="modal-header">Export Transcript</div>
+    <div class="modal-body">
+      <div class="export-option" onclick="exportAs('txt')">
+        <div class="export-option-info">
+          <div class="export-option-label">Plain Text (.txt)</div>
+          <div class="export-option-desc">Simple text file, opens in any editor</div>
+        </div>
+        <div class="export-option-icon">📄</div>
+      </div>
+      <div class="export-option" onclick="exportAs('md')">
+        <div class="export-option-info">
+          <div class="export-option-label">Markdown (.md)</div>
+          <div class="export-option-desc">With session title as heading</div>
+        </div>
+        <div class="export-option-icon">📝</div>
+      </div>
+      <div class="export-option" onclick="exportAs('html')">
+        <div class="export-option-info">
+          <div class="export-option-label">HTML Document</div>
+          <div class="export-option-desc">Styled and shareable web page</div>
+        </div>
+        <div class="export-option-icon">🌐</div>
+      </div>
+      <div class="export-option" onclick="exportAs('json')">
+        <div class="export-option-info">
+          <div class="export-option-label">JSON</div>
+          <div class="export-option-desc">Structured data with metadata</div>
+        </div>
+        <div class="export-option-icon">{ }</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('exportModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT MODAL -->
+<div class="modal-backdrop" id="aboutModal">
+  <div class="modal">
+    <div class="modal-header">About VoiceDraft</div>
+    <div class="modal-body" style="line-height:1.7; color: var(--text-muted); font-size:0.9rem;">
+      <p style="margin-bottom:1rem;">
+        <strong style="color:var(--text)">VoiceDraft</strong> is a free, browser-based voice transcription tool.
+        Speak into your microphone and your words are transcribed in real-time using your browser's
+        built-in speech recognition — no accounts, no servers, no fees.
+      </p>
+      <p style="margin-bottom:1rem;">
+        All transcripts are saved automatically to your browser's local storage.
+        Nothing leaves your device.
+      </p>
+      <ul style="padding-left:1.2rem; margin-bottom:1rem;">
+        <li>Real-time voice-to-text</li>
+        <li>13+ supported languages</li>
+        <li>Export as TXT, Markdown, HTML, or JSON</li>
+        <li>Multiple saved sessions</li>
+        <li>100% offline capable after first load</li>
+      </ul>
+      <p style="font-size:0.78rem; color:var(--text-dim)">Powered by the Web Speech API — works best in Chrome and Edge.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('aboutModal')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHORTCUTS MODAL -->
+<div class="modal-backdrop" id="shortcutsModal">
+  <div class="modal">
+    <div class="modal-header">Keyboard Shortcuts</div>
+    <div class="modal-body">
+      <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+        <tr><td style="padding:8px 0; color:var(--text-muted)">Start / Stop recording</td><td style="text-align:right"><kbd style="background:var(--surface2); border:1px solid var(--border); padding:3px 8px; border-radius:4px; font-size:0.8rem">Space</kbd></td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:8px 0; color:var(--text-muted)">New session</td><td style="text-align:right"><kbd style="background:var(--surface2); border:1px solid var(--border); padding:3px 8px; border-radius:4px; font-size:0.8rem">Ctrl+N</kbd></td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:8px 0; color:var(--text-muted)">Copy all</td><td style="text-align:right"><kbd style="background:var(--surface2); border:1px solid var(--border); padding:3px 8px; border-radius:4px; font-size:0.8rem">Ctrl+Shift+C</kbd></td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:8px 0; color:var(--text-muted)">Export</td><td style="text-align:right"><kbd style="background:var(--surface2); border:1px solid var(--border); padding:3px 8px; border-radius:4px; font-size:0.8rem">Ctrl+S</kbd></td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:8px 0; color:var(--text-muted)">Clear transcript</td><td style="text-align:right"><kbd style="background:var(--surface2); border:1px solid var(--border); padding:3px 8px; border-radius:4px; font-size:0.8rem">Ctrl+Backspace</kbd></td></tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('shortcutsModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ──────────────────────────────────────────────
+  //  STATE
+  // ──────────────────────────────────────────────
+  const STORAGE_KEY = 'voicedraft_sessions';
+  let sessions = [];
+  let activeId = null;
+  let recognition = null;
+  let isRecording = false;
+  let recordingStartTime = null;
+  let durationInterval = null;
+  let autoSaveTimeout = null;
+  let lastSavedAt = null;
+
+  // ──────────────────────────────────────────────
+  //  ELEMENTS
+  // ──────────────────────────────────────────────
+  const recordBtn       = document.getElementById('recordBtn');
+  const transcript      = document.getElementById('transcript');
+  const interimOverlay  = document.getElementById('interimOverlay');
+  const statusText      = document.getElementById('statusText');
+  const statusSubtext   = document.getElementById('statusSubtext');
+  const wordCount       = document.getElementById('wordCount');
+  const sessionsList    = document.getElementById('sessionsList');
+  const sessionNameInput= document.getElementById('sessionNameInput');
+  const langSelect      = document.getElementById('langSelect');
+  const waveform        = document.getElementById('waveform');
+  const statDuration    = document.getElementById('statDuration');
+  const statChars       = document.getElementById('statChars');
+  const statWords       = document.getElementById('statWords');
+  const statSentences   = document.getElementById('statSentences');
+  const statSaved       = document.getElementById('statSaved');
+
+  // ──────────────────────────────────────────────
+  //  SESSIONS
+  // ──────────────────────────────────────────────
+  function loadSessions() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      sessions = raw ? JSON.parse(raw) : [];
+    } catch { sessions = []; }
+    if (sessions.length === 0) createSession();
+    else selectSession(sessions[0].id);
+  }
+
+  function saveSessions() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+    lastSavedAt = new Date();
+    statSaved.textContent = formatTime(lastSavedAt);
+  }
+
+  function createSession() {
+    const id = 'sess_' + Date.now();
+    const session = {
+      id,
+      name: 'Session ' + (sessions.length + 1),
+      text: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lang: 'en-US'
+    };
+    sessions.unshift(session);
+    saveSessions();
+    selectSession(id);
+    renderSidebar();
+    sessionNameInput.focus();
+  }
+
+  function selectSession(id) {
+    if (isRecording) stopRecording();
+    activeId = id;
+    const s = getSession();
+    if (!s) return;
+    transcript.value = s.text;
+    sessionNameInput.value = s.name;
+    langSelect.value = s.lang || 'en-US';
+    updateStats();
+    renderSidebar();
+  }
+
+  function getSession(id) {
+    return sessions.find(s => s.id === (id || activeId));
+  }
+
+  function updateSession(patch) {
+    const s = getSession();
+    if (!s) return;
+    Object.assign(s, patch, { updatedAt: new Date().toISOString() });
+    scheduleAutosave();
+  }
+
+  function deleteSession(id) {
+    if (sessions.length === 1) { toast('Cannot delete the only session.', 'error'); return; }
+    sessions = sessions.filter(s => s.id !== id);
+    saveSessions();
+    if (activeId === id) selectSession(sessions[0].id);
+    renderSidebar();
+    toast('Session deleted.');
+  }
+
+  function scheduleAutosave() {
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => saveSessions(), 800);
+  }
+
+  function renderSidebar() {
+    if (sessions.length === 0) {
+      sessionsList.innerHTML = '<div class="empty-state">No sessions yet.<br/>Click + New to start.</div>';
+      return;
+    }
+    sessionsList.innerHTML = sessions.map(s => {
+      const words = s.text ? s.text.trim().split(/\s+/).filter(Boolean).length : 0;
+      const date = new Date(s.updatedAt);
+      const dateStr = date.toLocaleDateString(undefined, { month:'short', day:'numeric' });
+      return `
+        <div class="session-item ${s.id === activeId ? 'active' : ''}" onclick="selectSession('${s.id}')">
+          <button class="session-item-del" onclick="event.stopPropagation(); deleteSession('${s.id}')" title="Delete">✕</button>
+          <div class="session-item-title">${escHtml(s.name || 'Untitled')}</div>
+          <div class="session-item-meta">
+            <span>${words} words</span>
+            <span>${dateStr}</span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ──────────────────────────────────────────────
+  //  SPEECH RECOGNITION
+  // ──────────────────────────────────────────────
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    document.getElementById('unsupportedBanner').style.display = 'block';
+    recordBtn.disabled = true;
+    recordBtn.style.opacity = '0.4';
+    recordBtn.title = 'Speech recognition not supported in this browser';
+  }
+
+  function buildRecognition() {
+    if (!SpeechRecognition) return null;
+    const r = new SpeechRecognition();
+    r.continuous = true;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    r.lang = langSelect.value;
+
+    r.onstart = () => {
+      isRecording = true;
+      recordBtn.classList.add('recording');
+      recordBtn.textContent = '⏹';
+      statusText.textContent = 'Listening…';
+      statusText.className = 'status-text recording';
+      statusSubtext.textContent = 'Speak clearly into your microphone';
+      waveform.querySelectorAll('.wave-bar').forEach(b => b.classList.add('active'));
+      recordingStartTime = Date.now();
+      durationInterval = setInterval(updateDuration, 1000);
+    };
+
+    r.onresult = (e) => {
+      let interim = '';
+      let finalChunk = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const text = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalChunk += text;
+        else interim += text;
+      }
+      if (finalChunk) {
+        const s = getSession();
+        const current = s ? s.text : transcript.value;
+        const spacer = current && !current.endsWith(' ') && !current.endsWith('\n') ? ' ' : '';
+        const newText = current + spacer + finalChunk;
+        transcript.value = newText;
+        updateSession({ text: newText });
+        transcript.scrollTop = transcript.scrollHeight;
+        updateStats();
+      }
+      interimOverlay.textContent = interim;
+    };
+
+    r.onerror = (e) => {
+      if (e.error === 'no-speech') return;
+      if (e.error === 'aborted') return;
+      const msgs = {
+        'not-allowed': 'Microphone access denied. Please allow microphone access in your browser.',
+        'network': 'Network error. Check your internet connection.',
+        'audio-capture': 'No microphone found. Please connect a microphone.',
+        'service-not-allowed': 'Speech service not allowed. Please enable it in browser settings.'
+      };
+      toast(msgs[e.error] || `Recognition error: ${e.error}`, 'error');
+      stopRecording();
+    };
+
+    r.onend = () => {
+      interimOverlay.textContent = '';
+      if (isRecording) {
+        // auto-restart for continuous recording
+        try { r.start(); } catch {}
+      } else {
+        finishRecording();
+      }
+    };
+    return r;
+  }
+
+  function startRecording() {
+    recognition = buildRecognition();
+    if (!recognition) { toast('Speech recognition not supported.', 'error'); return; }
+    try {
+      recognition.lang = langSelect.value;
+      recognition.start();
+    } catch(e) {
+      toast('Could not start microphone: ' + e.message, 'error');
+    }
+  }
+
+  function stopRecording() {
+    isRecording = false;
+    if (recognition) {
+      try { recognition.stop(); } catch {}
+      recognition = null;
+    }
+    interimOverlay.textContent = '';
+    clearInterval(durationInterval);
+    finishRecording();
+  }
+
+  function finishRecording() {
+    recordBtn.classList.remove('recording');
+    recordBtn.textContent = '🎤';
+    statusText.textContent = 'Ready to record';
+    statusText.className = 'status-text';
+    statusSubtext.textContent = 'Click the microphone to begin';
+    waveform.querySelectorAll('.wave-bar').forEach(b => b.classList.remove('active'));
+  }
+
+  recordBtn.addEventListener('click', () => {
+    if (!SpeechRecognition) { toast('Speech recognition not supported in this browser.', 'error'); return; }
+    if (isRecording) stopRecording();
+    else startRecording();
+  });
+
+  langSelect.addEventListener('change', () => {
+    updateSession({ lang: langSelect.value });
+    if (isRecording) {
+      stopRecording();
+      setTimeout(() => startRecording(), 200);
+    }
+  });
+
+  // ──────────────────────────────────────────────
+  //  TEXT CHANGES
+  // ──────────────────────────────────────────────
+  transcript.addEventListener('input', () => {
+    updateSession({ text: transcript.value });
+    updateStats();
+  });
+
+  sessionNameInput.addEventListener('input', () => {
+    updateSession({ name: sessionNameInput.value });
+    renderSidebar();
+  });
+
+  // ──────────────────────────────────────────────
+  //  STATS
+  // ──────────────────────────────────────────────
+  function updateStats() {
+    const text = transcript.value;
+    const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+    const chars = text.length;
+    const sentences = text ? (text.match(/[.!?…]+/g) || []).length : 0;
+    wordCount.textContent = words + ' word' + (words !== 1 ? 's' : '');
+    statChars.textContent = chars.toLocaleString();
+    statWords.textContent = words.toLocaleString();
+    statSentences.textContent = sentences.toLocaleString();
+  }
+
+  function updateDuration() {
+    if (!recordingStartTime) return;
+    const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    statDuration.textContent = m + ':' + String(s).padStart(2, '0');
+  }
+
+  // ──────────────────────────────────────────────
+  //  EXPORT
+  // ──────────────────────────────────────────────
+  document.getElementById('exportBtn').addEventListener('click', () => openModal('exportModal'));
+
+  function exportAs(format) {
+    const s = getSession();
+    const text = s ? s.text : transcript.value;
+    const name = (s ? s.name : 'transcript') || 'transcript';
+    const now = new Date().toLocaleString();
+    let content, mime, ext;
+
+    if (format === 'txt') {
+      content = text;
+      mime = 'text/plain';
+      ext = 'txt';
+    } else if (format === 'md') {
+      content = `# ${name}\n\n*Transcribed on ${now}*\n\n---\n\n${text}`;
+      mime = 'text/markdown';
+      ext = 'md';
+    } else if (format === 'html') {
+      content = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>${escHtml(name)}</title>
+<style>body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;color:#222;line-height:1.75;}h1{font-size:1.5rem;margin-bottom:.25rem;}p.meta{color:#888;font-size:.85rem;margin-bottom:2rem;}pre{white-space:pre-wrap;background:#f5f5f5;padding:1.5rem;border-radius:8px;}</style>
+</head>
+<body>
+<h1>${escHtml(name)}</h1>
+<p class="meta">Transcribed with VoiceDraft on ${now}</p>
+<pre>${escHtml(text)}</pre>
+</body></html>`;
+      mime = 'text/html';
+      ext = 'html';
+    } else if (format === 'json') {
+      content = JSON.stringify({
+        title: name,
+        exportedAt: new Date().toISOString(),
+        wordCount: text.trim().split(/\s+/).filter(Boolean).length,
+        transcript: text,
+        session: s
+      }, null, 2);
+      mime = 'application/json';
+      ext = 'json';
+    }
+
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.' + ext;
+    a.click();
+    URL.revokeObjectURL(url);
+    closeModal('exportModal');
+    toast('Exported as .' + ext);
+  }
+
+  // ──────────────────────────────────────────────
+  //  COPY
+  // ──────────────────────────────────────────────
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    const text = transcript.value;
+    if (!text.trim()) { toast('Nothing to copy.', 'error'); return; }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Copied to clipboard!', 'success');
+    } catch {
+      transcript.select();
+      document.execCommand('copy');
+      toast('Copied!', 'success');
+    }
+  });
+
+  // ──────────────────────────────────────────────
+  //  CLEAR
+  // ──────────────────────────────────────────────
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    if (!transcript.value.trim()) return;
+    if (!confirm('Clear all text in this session?')) return;
+    transcript.value = '';
+    updateSession({ text: '' });
+    updateStats();
+    interimOverlay.textContent = '';
+    toast('Transcript cleared.');
+  });
+
+  // ──────────────────────────────────────────────
+  //  NEW SESSION
+  // ──────────────────────────────────────────────
+  document.getElementById('newSessionBtn').addEventListener('click', createSession);
+
+  // ──────────────────────────────────────────────
+  //  MODAL HELPERS
+  // ──────────────────────────────────────────────
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+  function showShortcuts() { openModal('shortcutsModal'); }
+  function showAbout() { openModal('aboutModal'); }
+
+  document.querySelectorAll('.modal-backdrop').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target === el) closeModal(el.id);
+    });
+  });
+
+  // ──────────────────────────────────────────────
+  //  TOAST
+  // ──────────────────────────────────────────────
+  function toast(msg, type = '') {
+    const container = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = msg;
+    container.appendChild(el);
+    setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.3s';
+      setTimeout(() => el.remove(), 350);
+    }, 2800);
+  }
+
+  // ──────────────────────────────────────────────
+  //  KEYBOARD SHORTCUTS
+  // ──────────────────────────────────────────────
+  document.addEventListener('keydown', (e) => {
+    if (e.target === transcript || e.target === sessionNameInput) {
+      // allow space in text areas
+      if (e.key === ' ') return;
+    }
+    if (e.key === ' ' && e.target !== transcript && e.target !== sessionNameInput) {
+      e.preventDefault();
+      if (isRecording) stopRecording();
+      else startRecording();
+    }
+    if (e.ctrlKey && e.key === 'n') { e.preventDefault(); createSession(); }
+    if (e.ctrlKey && e.shiftKey && e.key === 'C') { e.preventDefault(); document.getElementById('copyBtn').click(); }
+    if (e.ctrlKey && e.key === 's') { e.preventDefault(); openModal('exportModal'); }
+    if (e.ctrlKey && e.key === 'Backspace' && e.target !== transcript) { e.preventDefault(); document.getElementById('clearBtn').click(); }
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+    }
+  });
+
+  // ──────────────────────────────────────────────
+  //  MOBILE SIDEBAR TOGGLE
+  // ──────────────────────────────────────────────
+  document.getElementById('sidebarToggle').addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+  });
+
+  // ──────────────────────────────────────────────
+  //  HELPERS
+  // ──────────────────────────────────────────────
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatTime(date) {
+    if (!date) return '—';
+    return date.toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  }
+
+  // ──────────────────────────────────────────────
+  //  INIT
+  // ──────────────────────────────────────────────
+  loadSessions();
+  updateStats();
+  statSaved.textContent = 'just now';
+</script>
+</body>
+</html>
