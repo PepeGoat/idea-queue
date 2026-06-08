@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SigCraft — Free Email Signature Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #7c3aed;
+  --accent-light: #a78bfa;
+  --accent-dark: #5b21b6;
+  --bg: #0d0d14;
+  --surface: #16161f;
+  --surface2: #1e1e2a;
+  --surface3: #252535;
+  --border: #2a2a3d;
+  --border-light: #35354a;
+  --text: #e8e8f4;
+  --text-muted: #7d7d99;
+  --text-faint: #4a4a65;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --r: 10px;
+  --r-sm: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: linear-gradient(135deg, #0d0d14 0%, #16103a 50%, #0d0d14 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 20px rgba(124,58,237,0.4);
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-sep { flex: 1; }
+
+.header-badge {
+  background: rgba(124,58,237,0.15);
+  border: 1px solid rgba(124,58,237,0.3);
+  color: var(--accent-light);
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.header-tagline {
+  color: var(--text-muted);
+  font-size: 13px;
+  display: none;
+}
+
+@media (min-width: 768px) { .header-tagline { display: block; } }
+
+/* ── APP LAYOUT ── */
+.app {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  min-height: calc(100vh - 64px - 60px);
+}
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+}
+
+/* ── BUILDER PANEL ── */
+.builder-panel {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
+  position: sticky;
+  top: 64px;
+}
+
+.panel-header {
+  padding: 20px 20px 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-faint);
+}
+
+.panel-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+/* ── FORM FIELDS ── */
+.field {
+  margin-bottom: 10px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.field input, .field select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+.field input:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+}
+
+.field input::placeholder { color: var(--text-faint); }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* ── THEME SELECTOR ── */
+.theme-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.theme-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.theme-btn:hover { transform: scale(1.15); }
+.theme-btn.active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.3); }
+
+/* ── LAYOUT SELECTOR ── */
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.layout-btn {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+}
+
+.layout-btn:hover { border-color: var(--accent); }
+.layout-btn.active {
+  border-color: var(--accent);
+  background: rgba(124,58,237,0.1);
+}
+
+.layout-preview {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.layout-preview .lp-photo {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--border-light);
+  flex-shrink: 0;
+}
+
+.layout-preview .lp-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.layout-preview .lp-line {
+  height: 3px;
+  background: var(--border-light);
+  border-radius: 2px;
+}
+
+.layout-preview .lp-bar {
+  width: 2px;
+  height: 32px;
+  background: var(--border-light);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.layout-label { font-size: 11px; color: var(--text-muted); }
+
+/* ── COPY ACTIONS ── */
+.copy-actions {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  bottom: 0;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(124,58,237,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(124,58,237,0.4);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover { border-color: var(--border-light); background: var(--surface3); }
+
+.btn.success { background: var(--success) !important; color: #fff; }
+
+/* ── PREVIEW PANEL ── */
+.preview-panel {
+  background: var(--bg);
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.preview-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-faint);
+  margin-bottom: 16px;
+}
+
+/* ── EMAIL MOCKUP ── */
+.email-mockup {
+  background: #fff;
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
+  max-width: 700px;
+  margin: 0 auto 32px;
+}
+
+.email-chrome {
+  background: #f2f2f5;
+  padding: 10px 16px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e8;
+}
+
+.email-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.email-dot.red { background: #ff5f57; }
+.email-dot.yellow { background: #febc2e; }
+.email-dot.green { background: #28c840; }
+
+.email-bar {
+  flex: 1;
+  height: 22px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin: 0 8px;
+}
+
+.email-header-row {
+  background: #f7f7fa;
+  padding: 14px 24px 10px;
+  border-bottom: 1px solid #e8e8f0;
+}
+
+.email-subject {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 6px;
+}
+
+.email-meta {
+  font-size: 12px;
+  color: #777;
+  display: flex;
+  gap: 12px;
+}
+
+.email-body-content {
+  padding: 24px;
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.email-body-text {
+  margin-bottom: 20px;
+  color: #444;
+}
+
+.email-divider {
+  border: none;
+  border-top: 1px solid #e8e8f0;
+  margin: 20px 0;
+}
+
+#sig-preview-container {
+  min-height: 80px;
+}
+
+/* ── HOW TO USE ── */
+.how-to-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.how-to-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+}
+
+.how-to-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.how-to-card .icon {
+  font-size: 16px;
+}
+
+.how-to-card ol {
+  padding-left: 16px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--surface3);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-faint);
+  gap: 16px;
+}
+
+footer a { color: var(--text-muted); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+/* ── FONT TOGGLE ── */
+.font-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.font-btn {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.font-btn:hover { border-color: var(--border-light); }
+.font-btn.active { border-color: var(--accent); color: var(--accent-light); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">✦</div>
+      <div class="logo-text">sigcraft</div>
+    </div>
+    <div class="header-tagline">Build beautiful email signatures in seconds — free, forever</div>
+    <div class="header-sep"></div>
+    <div class="header-badge">100% Free</div>
+  </div>
+</header>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- LEFT: BUILDER -->
+  <aside class="builder-panel">
+    <div class="panel-header" style="padding: 16px 20px 12px;">Builder</div>
+
+    <!-- STYLE -->
+    <div class="panel-section">
+      <div class="section-title">
+        <span class="section-title-icon">🎨</span> Style
+      </div>
+
+      <div class="field">
+        <label>Accent Color</label>
+        <div class="theme-grid" id="themeGrid">
+          <button class="theme-btn active" data-color="#7c3aed" style="background:#7c3aed" title="Violet"></button>
+          <button class="theme-btn" data-color="#0ea5e9" style="background:#0ea5e9" title="Sky"></button>
+          <button class="theme-btn" data-color="#059669" style="background:#059669" title="Emerald"></button>
+          <button class="theme-btn" data-color="#e11d48" style="background:#e11d48" title="Rose"></button>
+          <button class="theme-btn" data-color="#f59e0b" style="background:#f59e0b" title="Amber"></button>
+          <button class="theme-btn" data-color="#475569" style="background:#475569" title="Slate"></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Font Family</label>
+        <div class="font-grid" id="fontGrid">
+          <button class="font-btn active" data-font="Arial, sans-serif">Arial</button>
+          <button class="font-btn" data-font="Georgia, serif">Georgia</button>
+          <button class="font-btn" data-font="'Helvetica Neue', sans-serif">Helvetica</button>
+          <button class="font-btn" data-font="'Trebuchet MS', sans-serif">Trebuchet</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Layout</label>
+        <div class="layout-grid" id="layoutGrid">
+          <!-- Classic -->
+          <button class="layout-btn active" data-layout="classic">
+            <div class="layout-preview">
+              <div class="lp-photo"></div>
+              <div class="lp-bar"></div>
+              <div class="lp-lines">
+                <div class="lp-line" style="width:40px"></div>
+                <div class="lp-line" style="width:32px"></div>
+                <div class="lp-line" style="width:28px"></div>
+              </div>
+            </div>
+            <div class="layout-label">Classic</div>
+          </button>
+          <!-- Modern -->
+          <button class="layout-btn" data-layout="modern">
+            <div class="layout-preview" style="flex-direction:column; align-items:flex-start; padding-left:8px;">
+              <div class="lp-line" style="width:44px; height:4px; margin-bottom:4px;"></div>
+              <div class="lp-bar" style="width:30px; height:2px; border-radius:2px; background:var(--border-light); margin-bottom:4px;"></div>
+              <div class="lp-line" style="width:36px"></div>
+              <div class="lp-line" style="width:28px; margin-top:2px"></div>
+            </div>
+            <div class="layout-label">Modern</div>
+          </button>
+          <!-- Minimal -->
+          <button class="layout-btn" data-layout="minimal">
+            <div class="layout-preview" style="flex-direction:column; align-items:center;">
+              <div class="lp-line" style="width:48px; height:4px;"></div>
+              <div class="lp-line" style="width:36px; margin-top:4px;"></div>
+              <div class="lp-line" style="width:28px; margin-top:4px;"></div>
+            </div>
+            <div class="layout-label">Minimal</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div class="panel-section">
+      <div class="section-title">
+        <span class="section-title-icon">👤</span> Personal Info
+      </div>
+      <div class="field">
+        <label>Full Name *</label>
+        <input type="text" id="f_name" placeholder="Alex Johnson" value="Alex Johnson">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Job Title</label>
+          <input type="text" id="f_title" placeholder="Product Designer" value="Product Designer">
+        </div>
+        <div class="field">
+          <label>Company</label>
+          <input type="text" id="f_company" placeholder="Acme Inc." value="Acme Inc.">
+        </div>
+      </div>
+      <div class="field">
+        <label>Profile Photo URL</label>
+        <input type="url" id="f_photo" placeholder="https://..." value="https://i.pravatar.cc/120?img=47">
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="panel-section">
+      <div class="section-title">
+        <span class="section-title-icon">📬</span> Contact
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="f_email" placeholder="alex@company.com" value="alex@company.com">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Phone</label>
+          <input type="tel" id="f_phone" placeholder="+1 (555) 000-0000" value="+1 (555) 123-4567">
+        </div>
+        <div class="field">
+          <label>Location</label>
+          <input type="text" id="f_location" placeholder="San Francisco, CA" value="San Francisco, CA">
+        </div>
+      </div>
+      <div class="field">
+        <label>Website</label>
+        <input type="url" id="f_website" placeholder="https://yoursite.com" value="https://alexjohnson.design">
+      </div>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="panel-section">
+      <div class="section-title">
+        <span class="section-title-icon">🔗</span> Social Links
+      </div>
+      <div class="field">
+        <label>LinkedIn URL</label>
+        <input type="url" id="f_linkedin" placeholder="https://linkedin.com/in/..." value="https://linkedin.com/in/alexjohnson">
+      </div>
+      <div class="field">
+        <label>X / Twitter URL</label>
+        <input type="url" id="f_twitter" placeholder="https://x.com/..." value="https://x.com/alexjohnson">
+      </div>
+      <div class="field">
+        <label>GitHub URL</label>
+        <input type="url" id="f_github" placeholder="https://github.com/..." value="">
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="copy-actions">
+      <button class="btn btn-primary" id="copyHtmlBtn">
+        <span>📋</span> Copy HTML Signature
+      </button>
+      <button class="btn btn-secondary" id="copyTextBtn">
+        <span>📄</span> Copy Plain Text
+      </button>
+    </div>
+  </aside>
+
+  <!-- RIGHT: PREVIEW -->
+  <main class="preview-panel">
+    <div class="preview-section-title">Live Preview</div>
+
+    <div class="email-mockup">
+      <div class="email-chrome">
+        <div class="email-dot red"></div>
+        <div class="email-dot yellow"></div>
+        <div class="email-dot green"></div>
+        <div class="email-bar"></div>
+      </div>
+      <div class="email-header-row">
+        <div class="email-subject">Re: Q3 Project Update</div>
+        <div class="email-meta">
+          <span>From: <strong id="preview-from">Alex Johnson</strong></span>
+          <span>To: team@company.com</span>
+          <span>Today, 2:34 PM</span>
+        </div>
+      </div>
+      <div class="email-body-content">
+        <div class="email-body-text">
+          Hi Sarah,<br><br>
+          Thanks for the update — everything looks great. Let me know if you need any additional assets before the deadline. Happy to jump on a call this week if helpful.<br><br>
+          Best,
+        </div>
+        <hr class="email-divider">
+        <div id="sig-preview-container">
+          <!-- Signature renders here -->
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-section-title">How to add your signature</div>
+    <div class="how-to-grid">
+      <div class="how-to-card">
+        <h4><span class="icon">📧</span> Gmail</h4>
+        <ol>
+          <li>Click "Copy HTML"</li>
+          <li>Open Gmail → Settings</li>
+          <li>Click "See all settings"</li>
+          <li>Scroll to Signature</li>
+          <li>Click in the editor</li>
+          <li>Paste (Ctrl+V)</li>
+        </ol>
+      </div>
+      <div class="how-to-card">
+        <h4><span class="icon">💙</span> Outlook</h4>
+        <ol>
+          <li>Click "Copy HTML"</li>
+          <li>Open Outlook → Settings</li>
+          <li>Go to Mail → Compose</li>
+          <li>Click "Email signature"</li>
+          <li>Edit signature block</li>
+          <li>Paste (Ctrl+V)</li>
+        </ol>
+      </div>
+      <div class="how-to-card">
+        <h4><span class="icon">🍎</span> Apple Mail</h4>
+        <ol>
+          <li>Click "Copy HTML"</li>
+          <li>Open Mail → Preferences</li>
+          <li>Click Signatures</li>
+          <li>Create new signature</li>
+          <li>Paste into field</li>
+          <li>Assign to account</li>
+        </ol>
+      </div>
+      <div class="how-to-card">
+        <h4><span class="icon">🏢</span> Any Client</h4>
+        <ol>
+          <li>Click "Copy HTML"</li>
+          <li>Find your email app's</li>
+          <li>signature settings</li>
+          <li>Look for "HTML" mode</li>
+          <li>Paste the code</li>
+          <li>Save &amp; enjoy!</li>
+        </ol>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>✦ <strong>sigcraft</strong> — Free email signature generator</span>
+  <span>·</span>
+  <span>No account needed · No watermarks · No limits</span>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const state = {
+  name: 'Alex Johnson',
+  title: 'Product Designer',
+  company: 'Acme Inc.',
+  photo: 'https://i.pravatar.cc/120?img=47',
+  email: 'alex@company.com',
+  phone: '+1 (555) 123-4567',
+  location: 'San Francisco, CA',
+  website: 'https://alexjohnson.design',
+  linkedin: 'https://linkedin.com/in/alexjohnson',
+  twitter: 'https://x.com/alexjohnson',
+  github: '',
+  color: '#7c3aed',
+  font: 'Arial, sans-serif',
+  layout: 'classic',
+};
+
+// Field bindings
+const bindings = [
+  ['f_name', 'name'], ['f_title', 'title'], ['f_company', 'company'],
+  ['f_photo', 'photo'], ['f_email', 'email'], ['f_phone', 'phone'],
+  ['f_location', 'location'], ['f_website', 'website'],
+  ['f_linkedin', 'linkedin'], ['f_twitter', 'twitter'], ['f_github', 'github'],
+];
+
+bindings.forEach(([id, key]) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    state[key] = el.value;
+    render();
+  });
+});
+
+// Theme buttons
+document.querySelectorAll('.theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.color = btn.dataset.color;
+    render();
+  });
+});
+
+// Font buttons
+document.querySelectorAll('.font-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.font = btn.dataset.font;
+    render();
+  });
+});
+
+// Layout buttons
+document.querySelectorAll('.layout-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.layout = btn.dataset.layout;
+    render();
+  });
+});
+
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function socialIcon(type) {
+  const icons = {
+    linkedin: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>`,
+    twitter: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+    github: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`,
+    website: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,
+    phone: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>`,
+    email: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+    location: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+  };
+  return icons[type] || '';
+}
+
+function buildSignatureHTML() {
+  const s = state;
+  const c = s.color;
+  const f = s.font;
+
+  const photoHtml = s.photo
+    ? `<img src="${esc(s.photo)}" width="80" height="80" alt="${esc(s.name)}" style="border-radius:50%;object-fit:cover;display:block;">`
+    : '';
+
+  const socialLinks = [
+    s.linkedin ? { url: s.linkedin, type: 'linkedin', label: 'LinkedIn' } : null,
+    s.twitter  ? { url: s.twitter,  type: 'twitter',  label: 'X'        } : null,
+    s.github   ? { url: s.github,   type: 'github',   label: 'GitHub'   } : null,
+    s.website  ? { url: s.website,  type: 'website',  label: 'Website'  } : null,
+  ].filter(Boolean);
+
+  const socialHtml = socialLinks.length
+    ? `<table cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;">
+        <tr>
+          ${socialLinks.map(l => `
+            <td style="padding-right:12px;">
+              <a href="${esc(l.url)}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:${esc(c)};font-family:${esc(f)};font-size:12px;font-weight:500;">
+                ${socialIcon(l.type)}
+                <span>${esc(l.label)}</span>
+              </a>
+            </td>
+          `).join('')}
+        </tr>
+      </table>`
+    : '';
+
+  const contactLine = [
+    s.email    ? `<a href="mailto:${esc(s.email)}" style="color:#555;text-decoration:none;">${esc(s.email)}</a>` : null,
+    s.phone    ? `<span>${esc(s.phone)}</span>` : null,
+    s.location ? `<span>${esc(s.location)}</span>` : null,
+  ].filter(Boolean).join(' &nbsp;·&nbsp; ');
+
+  if (s.layout === 'classic') {
+    return `
+<table cellpadding="0" cellspacing="0" border="0" style="font-family:${esc(f)};max-width:560px;">
+  <tr>
+    ${s.photo ? `<td style="padding-right:16px;vertical-align:top;">
+      ${photoHtml}
+    </td>` : ''}
+    <td style="border-left:3px solid ${esc(c)};padding-left:16px;vertical-align:top;">
+      <p style="margin:0 0 2px;font-size:18px;font-weight:700;color:#111;">${esc(s.name)}</p>
+      ${(s.title || s.company) ? `<p style="margin:0 0 6px;font-size:13px;color:#666;">${[s.title, s.company].filter(Boolean).map(esc).join(' &nbsp;at&nbsp; ')}</p>` : ''}
+      ${contactLine ? `<p style="margin:0 0 4px;font-size:12px;color:#888;">${contactLine}</p>` : ''}
+      ${socialHtml}
+    </td>
+  </tr>
+</table>`;
+  }
+
+  if (s.layout === 'modern') {
+    return `
+<table cellpadding="0" cellspacing="0" border="0" style="font-family:${esc(f)};max-width:560px;">
+  <tr>
+    <td>
+      <p style="margin:0 0 2px;font-size:20px;font-weight:800;color:#111;letter-spacing:-0.3px;">${esc(s.name)}</p>
+      ${(s.title || s.company) ? `<p style="margin:0 0 8px;font-size:13px;font-weight:500;color:${esc(c)};">${[s.title, s.company].filter(Boolean).map(esc).join(' · ')}</p>` : ''}
+      <table cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="width:40px;height:2px;background:${esc(c)};border-radius:1px;"></td>
+        <td style="width:200px;height:2px;background:#e8e8f0;border-radius:1px;"></td>
+      </tr></table>
+      <p style="margin:8px 0 4px;font-size:12px;color:#777;">${contactLine || ''}</p>
+      ${socialHtml}
+    </td>
+  </tr>
+</table>`;
+  }
+
+  // Minimal
+  return `
+<table cellpadding="0" cellspacing="0" border="0" style="font-family:${esc(f)};max-width:560px;">
+  <tr>
+    <td>
+      <p style="margin:0 0 1px;font-size:15px;font-weight:700;color:#111;">${esc(s.name)}${s.title ? `<span style="font-weight:400;color:#888;font-size:13px;"> &mdash; ${esc(s.title)}</span>` : ''}</p>
+      ${s.company ? `<p style="margin:0 0 4px;font-size:12px;color:${esc(c)};font-weight:500;">${esc(s.company)}</p>` : ''}
+      ${contactLine ? `<p style="margin:0 0 4px;font-size:12px;color:#888;">${contactLine}</p>` : ''}
+      ${socialHtml}
+    </td>
+  </tr>
+</table>`;
+}
+
+function render() {
+  const html = buildSignatureHTML();
+  document.getElementById('sig-preview-container').innerHTML = html;
+  const nameEl = document.getElementById('preview-from');
+  if (nameEl) nameEl.textContent = state.name || 'Your Name';
+}
+
+function showToast(msg, icon = '✓') {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<span>${icon}</span> ${msg}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+document.getElementById('copyHtmlBtn').addEventListener('click', () => {
+  const html = buildSignatureHTML().trim();
+  navigator.clipboard.writeText(html).then(() => {
+    const btn = document.getElementById('copyHtmlBtn');
+    btn.classList.add('success');
+    btn.innerHTML = '<span>✓</span> Copied!';
+    showToast('HTML signature copied to clipboard!');
+    setTimeout(() => {
+      btn.classList.remove('success');
+      btn.innerHTML = '<span>📋</span> Copy HTML Signature';
+    }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = html;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('HTML signature copied!');
+  });
+});
+
+document.getElementById('copyTextBtn').addEventListener('click', () => {
+  const s = state;
+  const lines = [
+    s.name,
+    [s.title, s.company].filter(Boolean).join(' at '),
+    s.email,
+    s.phone,
+    s.location,
+    s.website,
+    s.linkedin ? `LinkedIn: ${s.linkedin}` : null,
+    s.twitter  ? `X: ${s.twitter}` : null,
+    s.github   ? `GitHub: ${s.github}` : null,
+  ].filter(Boolean);
+
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Plain text signature copied!', '📄');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Plain text signature copied!', '📄');
+  });
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
