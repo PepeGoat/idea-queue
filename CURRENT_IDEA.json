@@ -1,12 +1,12 @@
 {
   "status": "pending_review",
-  "name": "atslens",
-  "idea": "ATSLens is a free browser-based ATS resume keyword optimizer — users paste a job description and their resume, and instantly get a match score, list of missing keywords, and actionable tips to beat automated resume screening systems.",
-  "why_trending": "AI-powered ATS (Applicant Tracking Systems) now screen 98% of Fortune 500 job applications; searches for 'ATS resume checker' and 'beat ATS' have surged in 2026 as AI hiring tools proliferate. Jobscan.co, a direct competitor, has 5M+ registered users and charges $49/month.",
-  "why_profitable": "Freemium model: free basic scoring with premium unlocks (unlimited saves, cover letter matcher, LinkedIn optimizer). Alternately high-CPM Google AdSense revenue from job-seeker traffic. Direct competitors Jobscan ($49/mo) and Resume Worded ($19/mo) validate strong willingness to pay.",
-  "why_easy": "100% client-side: JS tokenizes text, computes n-gram keyword matches, and renders results — zero backend required. No APIs, no databases, no auth. Pure HTML/CSS/JS single-page app that works offline and can be hosted free on GitHub Pages.",
-  "repo_url": "https://github.com/PepeGoat/idea-queue/tree/main/apps/atslens",
-  "demo_url": "https://pepegoat.github.io/idea-queue/apps/atslens/",
-  "note": "Demo code stored in idea-queue/apps/atslens/ because session token lacked repo-creation permissions. To launch: create github.com/PepeGoat/atslens repo and copy apps/atslens/index.html there, then enable GitHub Pages.",
-  "created_at": "2026-06-11T02:07:00Z"
+  "name": "qrcraft",
+  "idea": "QRCraft is a free browser-based custom QR code generator — users enter a URL, text, WiFi credentials, vCard, or email and instantly get a beautifully styled QR code they can customize with colors, logos, and download as PNG or SVG.",
+  "why_trending": "QR codes exploded post-pandemic and remain ubiquitous in 2026 for restaurant menus, business cards, events, and marketing. 'QR code generator' receives millions of monthly searches globally; Product Hunt regularly features QR tools and competitors like QR Tiger charge $9.99–$49.99/month for custom styling.",
+  "why_profitable": "Freemium model: free basic QR codes with premium unlocks (dynamic QR codes that can be edited after printing, analytics/scan tracking, bulk generation, white-label). High-CPM Google AdSense revenue from small-business traffic. QR Tiger and Bitly QR charge $9–50/month validating strong willingness to pay.",
+  "why_easy": "100% client-side: QRCode.js via CDN handles all encoding — zero backend required. Logo embedding, color customization, and PNG/SVG export all use Canvas API natively in the browser. Pure HTML/CSS/JS single-page app that works offline and deploys free to GitHub Pages.",
+  "repo_url": "https://github.com/PepeGoat/idea-queue/tree/main/apps/qrcraft",
+  "demo_url": "https://pepegoat.github.io/idea-queue/apps/qrcraft/",
+  "note": "Demo code stored in idea-queue/apps/qrcraft/ because session token lacked repo-creation permissions. To launch: create github.com/PepeGoat/qrcraft repo and copy apps/qrcraft/index.html there, then enable GitHub Pages.",
+  "created_at": "2026-06-12T00:00:00Z"
 }
