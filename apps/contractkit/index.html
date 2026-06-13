@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ContractKit — Free Freelancer Contract Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent: #7c3aed;
+      --success: #059669;
+      --danger: #dc2626;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      --shadow-lg: 0 4px 24px rgba(0,0,0,.12);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 8px rgba(0,0,0,.06);
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text { font-size: 1.2rem; font-weight: 700; color: var(--gray-900); }
+    .logo-text span { color: var(--primary); }
+    .header-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #7c3aed 100%);
+      color: #fff;
+      text-align: center;
+      padding: 56px 24px 48px;
+    }
+    .hero h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; margin-bottom: 12px; }
+    .hero p { font-size: 1.05rem; opacity: .88; max-width: 540px; margin: 0 auto 28px; }
+    .hero-pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .hero-pill {
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 99px;
+      padding: 5px 14px;
+      font-size: .82rem;
+      font-weight: 500;
+    }
+
+    /* ── Layout ── */
+    .main { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header h2 { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .icon-blue { background: var(--primary-light); }
+    .icon-purple { background: #f5f3ff; }
+    .icon-green { background: #ecfdf5; }
+    .card-body { padding: 20px 24px; }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--gray-200); margin: 0 -24px 20px; padding: 0 24px; }
+    .tab-btn {
+      padding: 10px 16px;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all .15s;
+    }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Form Controls ── */
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: .82rem; font-weight: 600; color: var(--gray-600); margin-bottom: 5px; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 7px;
+      font-size: .9rem;
+      font-family: inherit;
+      color: var(--gray-800);
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    /* ── Section Heading ── */
+    .section-title {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gray-400);
+      margin: 20px 0 12px;
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    /* ── Deliverable Items ── */
+    .deliverables { display: flex; flex-direction: column; gap: 8px; }
+    .deliverable-item { display: flex; gap: 8px; align-items: center; }
+    .deliverable-item input { flex: 1; }
+    .del-btn {
+      width: 32px; height: 32px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--gray-500);
+      cursor: pointer;
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+    .del-btn:hover { border-color: var(--danger); color: var(--danger); background: #fef2f2; }
+    .add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 7px 14px;
+      border: 1.5px dashed var(--gray-300);
+      border-radius: 7px;
+      background: none;
+      color: var(--gray-500);
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+    /* ── Type Selector ── */
+    .type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+    .type-card {
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .15s;
+      background: #fff;
+    }
+    .type-card:hover { border-color: var(--primary); background: var(--primary-light); }
+    .type-card.selected { border-color: var(--primary); background: var(--primary-light); }
+    .type-card .type-icon { font-size: 22px; margin-bottom: 4px; }
+    .type-card .type-name { font-size: .8rem; font-weight: 600; color: var(--gray-700); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.3); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover { background: #047857; transform: translateY(-1px); }
+    .btn-outline {
+      background: #fff;
+      color: var(--gray-700);
+      border: 1.5px solid var(--gray-300);
+    }
+    .btn-outline:hover { border-color: var(--gray-400); background: var(--gray-50); }
+    .btn-purple { background: var(--accent); color: #fff; }
+    .btn-purple:hover { background: #6d28d9; transform: translateY(-1px); }
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+    /* ── Contract Preview ── */
+    .preview-panel {
+      position: sticky;
+      top: 88px;
+      max-height: calc(100vh - 108px);
+      overflow-y: auto;
+    }
+    .preview-panel::-webkit-scrollbar { width: 6px; }
+    .preview-panel::-webkit-scrollbar-track { background: var(--gray-100); }
+    .preview-panel::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+
+    #contractDoc {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #1a1a1a;
+      padding: 24px;
+    }
+
+    #contractDoc .doc-header {
+      text-align: center;
+      border-bottom: 2px solid #1a1a1a;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    #contractDoc .doc-title {
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+    }
+    #contractDoc .doc-subtitle { font-size: 12px; color: #555; }
+    #contractDoc .doc-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+      background: #f8f8f8;
+      padding: 12px;
+      border-radius: 4px;
+    }
+    #contractDoc .doc-meta-block h4 { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: #888; margin-bottom: 4px; }
+    #contractDoc .doc-meta-block p { font-size: 13px; font-weight: bold; }
+    #contractDoc .doc-meta-block span { font-size: 12px; color: #444; display: block; }
+    #contractDoc h3 {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin: 18px 0 6px;
+      color: #1a1a1a;
+    }
+    #contractDoc p { margin-bottom: 8px; }
+    #contractDoc ul { margin: 6px 0 10px 18px; }
+    #contractDoc ul li { margin-bottom: 4px; }
+    #contractDoc .payment-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+    #contractDoc .payment-table th { background: #1a1a1a; color: #fff; padding: 6px 10px; text-align: left; font-size: 11px; }
+    #contractDoc .payment-table td { padding: 6px 10px; border-bottom: 1px solid #e5e5e5; }
+    #contractDoc .payment-table tr:last-child td { font-weight: bold; background: #f5f5f5; }
+    #contractDoc .signature-block {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    #contractDoc .sig-line { border-top: 1.5px solid #1a1a1a; padding-top: 6px; margin-top: 48px; }
+    #contractDoc .sig-name { font-weight: bold; font-size: 13px; }
+    #contractDoc .sig-role { font-size: 11px; color: #666; }
+    #contractDoc .placeholder { color: #aaa; font-style: italic; }
+    #contractDoc .highlight { color: #2563eb; }
+
+    /* ── Action bar ── */
+    .action-bar {
+      background: #fff;
+      border-top: 1px solid var(--gray-200);
+      padding: 14px 24px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .action-bar span { font-size: .8rem; color: var(--gray-500); margin-left: auto; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--gray-900);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: .88rem;
+      font-weight: 500;
+      z-index: 999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s cubic-bezier(.175,.885,.32,1.275);
+      box-shadow: var(--shadow-lg);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Progress Steps ── */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--gray-100);
+      overflow-x: auto;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      color: var(--gray-500);
+      font-size: .78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step.active .step-num { background: var(--primary); color: #fff; }
+    .step.done .step-num { background: var(--success); color: #fff; }
+    .step-label { font-size: .78rem; font-weight: 600; color: var(--gray-400); }
+    .step.active .step-label { color: var(--primary); }
+    .step.done .step-label { color: var(--success); }
+    .step-sep { width: 28px; height: 1.5px; background: var(--gray-200); margin: 0 4px; flex-shrink: 0; }
+    .step.done + .step-sep { background: var(--success); }
+
+    /* ── Clause toggle ── */
+    .clause-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .clause-row:last-child { border-bottom: none; }
+    .clause-info .clause-name { font-size: .88rem; font-weight: 600; color: var(--gray-800); }
+    .clause-info .clause-desc { font-size: .76rem; color: var(--gray-500); }
+    .toggle {
+      position: relative;
+      width: 38px;
+      height: 21px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--gray-300);
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--primary); }
+    .toggle-thumb {
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 15px;
+      height: 15px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform .2s;
+      pointer-events: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(17px); }
+
+    /* ── Print styles ── */
+    @media print {
+      header, .hero, .form-col, .action-bar, .steps, .card-header, footer { display: none !important; }
+      .main { display: block; padding: 0; }
+      .preview-col { position: static; }
+      .preview-panel { position: static; max-height: none; overflow: visible; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: none; }
+      #contractDoc { font-size: 12pt; }
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: .82rem;
+      color: var(--gray-400);
+      border-top: 1px solid var(--gray-200);
+      background: #fff;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer .footer-links { display: flex; gap: 20px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">📄</div>
+      <span class="logo-text">Contract<span>Kit</span></span>
+    </a>
+    <div class="header-badge">100% Free · No Signup Required</div>
+  </div>
+</header>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <h1>Generate a Professional Contract<br>in Under 2 Minutes</h1>
+  <p>Fill in the form, preview your contract instantly, then print or download as PDF — completely free.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">✦ Web Design</span>
+    <span class="hero-pill">✦ Consulting</span>
+    <span class="hero-pill">✦ Copywriting</span>
+    <span class="hero-pill">✦ Development</span>
+    <span class="hero-pill">✦ Photography</span>
+  </div>
+</div>
+
+<!-- ── Main Layout ── -->
+<div class="main">
+
+  <!-- LEFT: Form Column -->
+  <div class="form-col">
+
+    <!-- Contract Type -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-icon icon-blue">🎯</div>
+        <h2>Contract Type</h2>
+      </div>
+      <div class="card-body">
+        <div class="type-grid" id="typeGrid">
+          <div class="type-card selected" data-type="web">
+            <div class="type-icon">🌐</div>
+            <div class="type-name">Web Design</div>
+          </div>
+          <div class="type-card" data-type="dev">
+            <div class="type-icon">💻</div>
+            <div class="type-name">Development</div>
+          </div>
+          <div class="type-card" data-type="copy">
+            <div class="type-icon">✍️</div>
+            <div class="type-name">Copywriting</div>
+          </div>
+          <div class="type-card" data-type="consult">
+            <div class="type-icon">🤝</div>
+            <div class="type-name">Consulting</div>
+          </div>
+          <div class="type-card" data-type="photo">
+            <div class="type-icon">📷</div>
+            <div class="type-name">Photography</div>
+          </div>
+          <div class="type-card" data-type="marketing">
+            <div class="type-icon">📣</div>
+            <div class="type-name">Marketing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Card -->
+    <div class="card">
+      <div class="steps">
+        <div class="step done" id="step1"><div class="step-num">✓</div><div class="step-label">Type</div></div>
+        <div class="step-sep"></div>
+        <div class="step active" id="step2"><div class="step-num">2</div><div class="step-label">Parties</div></div>
+        <div class="step-sep"></div>
+        <div class="step" id="step3"><div class="step-num">3</div><div class="step-label">Scope</div></div>
+        <div class="step-sep"></div>
+        <div class="step" id="step4"><div class="step-num">4</div><div class="step-label">Payment</div></div>
+        <div class="step-sep"></div>
+        <div class="step" id="step5"><div class="step-num">5</div><div class="step-label">Terms</div></div>
+      </div>
+
+      <div class="card-body">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="parties">Parties</button>
+          <button class="tab-btn" data-tab="scope">Scope</button>
+          <button class="tab-btn" data-tab="payment">Payment</button>
+          <button class="tab-btn" data-tab="terms">Terms</button>
+        </div>
+
+        <!-- Tab: Parties -->
+        <div class="tab-panel active" id="tab-parties">
+          <div class="section-title">Your Information (Freelancer)</div>
+          <div class="field-row">
+            <div class="field"><label>Full Name / Business Name</label><input id="fName" placeholder="Jane Smith Design" oninput="updateContract()" /></div>
+            <div class="field"><label>Title / Role</label><input id="fTitle" placeholder="Freelance Designer" oninput="updateContract()" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="jane@studio.com" oninput="updateContract()" /></div>
+            <div class="field"><label>Phone (optional)</label><input id="fPhone" placeholder="+1 555 000 0000" oninput="updateContract()" /></div>
+          </div>
+          <div class="field"><label>Address (optional)</label><input id="fAddress" placeholder="123 Main St, City, State ZIP" oninput="updateContract()" /></div>
+
+          <div class="section-title">Client Information</div>
+          <div class="field-row">
+            <div class="field"><label>Client Name / Company</label><input id="cName" placeholder="Acme Corp" oninput="updateContract()" /></div>
+            <div class="field"><label>Client Contact Name</label><input id="cContact" placeholder="John Doe" oninput="updateContract()" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Client Email</label><input id="cEmail" type="email" placeholder="john@acmecorp.com" oninput="updateContract()" /></div>
+            <div class="field"><label>Client Phone (optional)</label><input id="cPhone" placeholder="+1 555 111 1111" oninput="updateContract()" /></div>
+          </div>
+          <div class="field"><label>Client Address (optional)</label><input id="cAddress" placeholder="456 Business Ave, City, State ZIP" oninput="updateContract()" /></div>
+
+          <div class="section-title">Contract Dates</div>
+          <div class="field-row">
+            <div class="field"><label>Contract Date</label><input id="contractDate" type="date" oninput="updateContract()" /></div>
+            <div class="field"><label>Project Start Date</label><input id="startDate" type="date" oninput="updateContract()" /></div>
+          </div>
+          <div class="field"><label>Project Deadline</label><input id="deadline" type="date" oninput="updateContract()" /></div>
+        </div>
+
+        <!-- Tab: Scope -->
+        <div class="tab-panel" id="tab-scope">
+          <div class="field">
+            <label>Project Name / Title</label>
+            <input id="projectName" placeholder="Website Redesign for Acme Corp" oninput="updateContract()" />
+          </div>
+          <div class="field">
+            <label>Project Description</label>
+            <textarea id="projectDesc" placeholder="Briefly describe the overall project and its goals..." oninput="updateContract()"></textarea>
+          </div>
+
+          <div class="section-title">Deliverables</div>
+          <p style="font-size:.82rem;color:var(--gray-500);margin-bottom:10px">List each specific deliverable the client will receive.</p>
+          <div class="deliverables" id="deliverablesList"></div>
+          <button class="add-btn" onclick="addDeliverable()">+ Add Deliverable</button>
+
+          <div class="section-title" style="margin-top:18px">Revisions Policy</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Number of Revision Rounds</label>
+              <select id="revisions" onchange="updateContract()">
+                <option value="1">1 round</option>
+                <option value="2" selected>2 rounds</option>
+                <option value="3">3 rounds</option>
+                <option value="unlimited">Unlimited</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Additional Revision Rate</label>
+              <input id="revRate" placeholder="e.g. $75/hour" oninput="updateContract()" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Out-of-Scope Work (what's NOT included)</label>
+            <textarea id="outOfScope" placeholder="e.g. Copywriting, stock photography, SEO optimization..." oninput="updateContract()"></textarea>
+          </div>
+        </div>
+
+        <!-- Tab: Payment -->
+        <div class="tab-panel" id="tab-payment">
+          <div class="section-title">Fee Structure</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Payment Type</label>
+              <select id="payType" onchange="updateContract()">
+                <option value="fixed">Fixed Price</option>
+                <option value="hourly">Hourly Rate</option>
+                <option value="milestone">Milestone-Based</option>
+                <option value="retainer">Monthly Retainer</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Currency</label>
+              <select id="currency" onchange="updateContract()">
+                <option value="USD">$ USD</option>
+                <option value="EUR">€ EUR</option>
+                <option value="GBP">£ GBP</option>
+                <option value="CAD">CA$ CAD</option>
+                <option value="AUD">A$ AUD</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="fixedFields">
+            <div class="field-row">
+              <div class="field"><label>Total Project Fee</label><input id="totalFee" type="number" placeholder="5000" oninput="updateContract()" /></div>
+              <div class="field"><label>Deposit Percentage</label>
+                <select id="depositPct" onchange="updateContract()">
+                  <option value="25">25%</option>
+                  <option value="50" selected>50%</option>
+                  <option value="100">100% upfront</option>
+                  <option value="0">No deposit</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="hourlyFields" style="display:none">
+            <div class="field-row">
+              <div class="field"><label>Hourly Rate</label><input id="hourlyRate" type="number" placeholder="150" oninput="updateContract()" /></div>
+              <div class="field"><label>Estimated Hours</label><input id="estimatedHours" type="number" placeholder="40" oninput="updateContract()" /></div>
+            </div>
+          </div>
+
+          <div class="section-title">Payment Terms</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Invoice Payment Due</label>
+              <select id="netDays" onchange="updateContract()">
+                <option value="7">Net 7 (7 days)</option>
+                <option value="14" selected>Net 14 (14 days)</option>
+                <option value="30">Net 30 (30 days)</option>
+                <option value="0">Due on receipt</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Late Fee</label>
+              <select id="lateFee" onchange="updateContract()">
+                <option value="none">None</option>
+                <option value="1.5" selected>1.5% per month</option>
+                <option value="2">2% per month</option>
+                <option value="flat25">$25 flat fee</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Accepted Payment Methods</label>
+            <input id="payMethods" placeholder="Bank transfer, PayPal, Stripe, Wise" oninput="updateContract()" />
+          </div>
+          <div class="field">
+            <label>Cancellation Policy</label>
+            <select id="cancelPolicy" onchange="updateContract()">
+              <option value="keep_deposit">Client forfeits deposit</option>
+              <option value="kill_fee">Kill fee: 25% of remaining balance</option>
+              <option value="work_done">Pay for work completed only</option>
+              <option value="no_refund">No refunds after project start</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tab: Terms -->
+        <div class="tab-panel" id="tab-terms">
+          <div class="section-title">Include Clauses</div>
+          <div id="clauseList">
+            <div class="clause-row">
+              <div class="clause-info">
+                <div class="clause-name">Intellectual Property Transfer</div>
+                <div class="clause-desc">Full IP rights transfer to client upon final payment</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cl-ip" checked onchange="updateContract()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+            <div class="clause-row">
+              <div class="clause-info">
+                <div class="clause-name">Confidentiality / NDA</div>
+                <div class="clause-desc">Both parties agree to keep project details confidential</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cl-nda" checked onchange="updateContract()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+            <div class="clause-row">
+              <div class="clause-info">
+                <div class="clause-name">Portfolio Usage</div>
+                <div class="clause-desc">Freelancer may show work in portfolio after launch</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cl-portfolio" checked onchange="updateContract()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+            <div class="clause-row">
+              <div class="clause-info">
+                <div class="clause-name">Limitation of Liability</div>
+                <div class="clause-desc">Freelancer's liability capped at total project fee</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cl-liability" checked onchange="updateContract()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+            <div class="clause-row">
+              <div class="clause-info">
+                <div class="clause-name">Non-Solicitation</div>
+                <div class="clause-desc">Client won't poach freelancer's other contractors</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cl-nonsol" onchange="updateContract()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+            <div class="clause-row">
+              <div class="clause-info">
+                <div class="clause-name">Force Majeure</div>
+                <div class="clause-desc">Neither party liable for delays due to circumstances beyond control</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cl-force" checked onchange="updateContract()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+            <div class="clause-row">
+              <div class="clause-info">
+                <div class="clause-name">Dispute Resolution</div>
+                <div class="clause-desc">Mediation/arbitration before litigation</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cl-dispute" onchange="updateContract()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+          </div>
+
+          <div class="section-title" style="margin-top:18px">Governing Law</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Jurisdiction / State</label>
+              <input id="jurisdiction" placeholder="e.g. State of California, USA" oninput="updateContract()" />
+            </div>
+            <div class="field">
+              <label>Freelancer's Contractor Status</label>
+              <select id="contractorType" onchange="updateContract()">
+                <option value="independent">Independent Contractor</option>
+                <option value="sole">Sole Proprietor</option>
+                <option value="llc">LLC</option>
+                <option value="corp">Corporation</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Additional Notes / Custom Clauses</label>
+            <textarea id="customClauses" placeholder="Any additional terms, special agreements, or custom clauses..." oninput="updateContract()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-outline" onclick="resetForm()">🔄 Reset</button>
+        <button class="btn btn-outline" onclick="copyText()">📋 Copy Text</button>
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <span>No account needed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Preview Column -->
+  <div class="preview-col">
+    <div class="card preview-panel">
+      <div class="card-header">
+        <div class="card-icon icon-green">👁️</div>
+        <h2>Live Contract Preview</h2>
+      </div>
+      <div id="contractDoc">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div><strong>ContractKit</strong> — Professional contracts for freelancers, generated free in your browser.</div>
+  <div class="footer-links">
+    <a href="#">Web Design</a>
+    <a href="#">Development</a>
+    <a href="#">Consulting</a>
+    <a href="#">Photography</a>
+    <a href="#">Copywriting</a>
+  </div>
+  <div style="margin-top:12px">⚠️ ContractKit provides templates for informational purposes only. Consult a legal professional for binding contracts.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let currentType = 'web';
+let deliverables = ['Homepage design', 'Mobile-responsive layout', '5 inner pages', 'Developer handoff files'];
+
+const typeNames = {
+  web: 'Web Design', dev: 'Software Development', copy: 'Copywriting Services',
+  consult: 'Consulting Services', photo: 'Photography Services', marketing: 'Marketing Services'
+};
+
+const typeDefaults = {
+  web: ['Homepage design', 'Mobile-responsive layout', '5 inner pages', 'Developer handoff files'],
+  dev: ['Frontend application', 'API integration', 'Unit tests', 'Deployment & documentation'],
+  copy: ['10 blog articles (1,000 words each)', 'SEO optimization', 'Meta descriptions', '2 rounds of revisions'],
+  consult: ['Discovery session (2 hours)', 'Strategy document', '3 follow-up calls', 'Final recommendations report'],
+  photo: ['4-hour shoot session', '50 edited high-resolution images', 'Online gallery delivery', 'Commercial usage license'],
+  marketing: ['Content calendar (3 months)', 'Monthly social media management', 'Performance report', 'Ad campaign setup']
+};
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('contractDate').value = today;
+  const nextMonth = new Date();
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  document.getElementById('deadline').value = nextMonth.toISOString().split('T')[0];
+
+  renderDeliverables();
+  updateContract();
+  setupTabs();
+  setupTypeCards();
+  setupPayType();
+});
+
+// ── Tab switching ──
+function setupTabs() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      updateSteps(btn.dataset.tab);
+    });
+  });
+}
+
+function updateSteps(activeTab) {
+  const map = { parties: 2, scope: 3, payment: 4, terms: 5 };
+  const activeIdx = map[activeTab];
+  for (let i = 2; i <= 5; i++) {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active', 'done');
+    if (i < activeIdx) el.classList.add('done');
+    else if (i === activeIdx) el.classList.add('active');
+    if (i < activeIdx) el.querySelector('.step-num').textContent = '✓';
+    else el.querySelector('.step-num').textContent = i - 1;
+  }
+}
+
+// ── Type cards ──
+function setupTypeCards() {
+  document.querySelectorAll('.type-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentType = card.dataset.type;
+      deliverables = [...typeDefaults[currentType]];
+      renderDeliverables();
+      updateContract();
+    });
+  });
+}
+
+// ── Pay type toggle ──
+function setupPayType() {
+  document.getElementById('payType').addEventListener('change', function() {
+    document.getElementById('fixedFields').style.display = this.value === 'hourly' ? 'none' : '';
+    document.getElementById('hourlyFields').style.display = this.value === 'hourly' ? '' : 'none';
+    updateContract();
+  });
+}
+
+// ── Deliverables ──
+function renderDeliverables() {
+  const list = document.getElementById('deliverablesList');
+  list.innerHTML = deliverables.map((d, i) => `
+    <div class="deliverable-item">
+      <input value="${escHtml(d)}" placeholder="Deliverable ${i+1}" oninput="deliverables[${i}]=this.value;updateContract()" />
+      <button class="del-btn" onclick="removeDeliverable(${i})" title="Remove">✕</button>
+    </div>`).join('');
+}
+
+function addDeliverable() {
+  deliverables.push('');
+  renderDeliverables();
+  const inputs = document.querySelectorAll('.deliverable-item input');
+  inputs[inputs.length - 1].focus();
+}
+
+function removeDeliverable(i) {
+  if (deliverables.length <= 1) return;
+  deliverables.splice(i, 1);
+  renderDeliverables();
+  updateContract();
+}
+
+// ── Helpers ──
+function v(id) { return (document.getElementById(id)?.value || '').trim(); }
+function checked(id) { return document.getElementById(id)?.checked; }
+function ph(val, label) { return val || `<span class="placeholder">[${label}]</span>`; }
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function fmtDate(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function fmtMoney(amount, currency) {
+  const symbols = { USD: '$', EUR: '€', GBP: '£', CAD: 'CA$', AUD: 'A$' };
+  const sym = symbols[currency] || '$';
+  if (!amount) return `${sym}___`;
+  return `${sym}${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+}
+
+// ── Contract Renderer ──
+function updateContract() {
+  const fName = v('fName'), fTitle = v('fTitle'), fEmail = v('fEmail'), fPhone = v('fPhone'), fAddress = v('fAddress');
+  const cName = v('cName'), cContact = v('cContact'), cEmail = v('cEmail'), cPhone = v('cPhone'), cAddress = v('cAddress');
+  const contractDate = v('contractDate'), startDate = v('startDate'), deadline = v('deadline');
+  const projectName = v('projectName'), projectDesc = v('projectDesc');
+  const revisions = v('revisions'), revRate = v('revRate'), outOfScope = v('outOfScope');
+  const payType = v('payType'), currency = v('currency'), netDays = v('netDays'), lateFee = v('lateFee');
+  const totalFee = v('totalFee'), depositPct = v('depositPct'), hourlyRate = v('hourlyRate'), estimatedHours = v('estimatedHours');
+  const payMethods = v('payMethods'), cancelPolicy = v('cancelPolicy'), jurisdiction = v('jurisdiction');
+  const contractorType = v('contractorType'), customClauses = v('customClauses');
+
+  const typeName = typeNames[currentType];
+
+  // Payment section
+  let paymentRows = '';
+  let totalDisplay = '';
+  if (payType === 'hourly') {
+    const est = hourlyRate && estimatedHours ? Number(hourlyRate) * Number(estimatedHours) : null;
+    paymentRows = `
+      <tr><th>Hourly Rate</th><th>Estimated Hours</th><th>Estimated Total</th></tr>
+      <tr>
+        <td>${fmtMoney(hourlyRate, currency)}/hr</td>
+        <td>${estimatedHours || '___'} hrs</td>
+        <td>${est ? fmtMoney(est, currency) : fmtMoney('', currency)} (estimate)</td>
+      </tr>`;
+    totalDisplay = `<p>The Freelancer shall be compensated at a rate of <strong>${fmtMoney(hourlyRate, currency)} per hour</strong>. Estimated total is <strong>${est ? fmtMoney(est, currency) : '[Estimated Total]'}</strong> based on approximately ${estimatedHours || '___'} hours.</p>`;
+  } else if (payType === 'retainer') {
+    paymentRows = `
+      <tr><th>Monthly Retainer</th><th>Start Date</th><th>Notice Period</th></tr>
+      <tr><td>${fmtMoney(totalFee, currency)}/month</td><td>${fmtDate(startDate) || '___'}</td><td>30 days written notice</td></tr>`;
+    totalDisplay = `<p>The Client shall pay a monthly retainer of <strong>${fmtMoney(totalFee, currency)}</strong>, due on the 1st of each month.</p>`;
+  } else {
+    const deposit = totalFee && depositPct > 0 ? (Number(totalFee) * Number(depositPct) / 100) : null;
+    const balance = totalFee && deposit ? (Number(totalFee) - deposit) : null;
+    paymentRows = `
+      <tr><th>Item</th><th>Amount</th><th>Due</th></tr>
+      ${Number(depositPct) > 0 ? `<tr><td>Deposit (${depositPct}%)</td><td>${deposit ? fmtMoney(deposit, currency) : fmtMoney('', currency)}</td><td>Upon signing</td></tr>` : ''}
+      ${balance ? `<tr><td>Final Balance</td><td>${fmtMoney(balance, currency)}</td><td>Upon project completion</td></tr>` : ''}
+      <tr><td>Total Project Fee</td><td>${fmtMoney(totalFee, currency)}</td><td>—</td></tr>`;
+    totalDisplay = `<p>The total project fee is <strong>${fmtMoney(totalFee, currency)}</strong>${Number(depositPct) > 0 ? `, with a <strong>${depositPct}% deposit (${deposit ? fmtMoney(deposit, currency) : fmtMoney('', currency)})</strong> due upon signing` : ''}.</p>`;
+  }
+
+  const lateFeeText = lateFee === 'none' ? 'No late fees apply.' :
+    lateFee === 'flat25' ? 'A flat fee of $25 will be charged for each 30-day period an invoice remains unpaid.' :
+    `A late fee of ${lateFee}% per month (${(Number(lateFee) * 12).toFixed(0)}% annually) will be applied to overdue balances.`;
+
+  const cancelText = {
+    keep_deposit: 'If the Client cancels the project after signing, the deposit is non-refundable.',
+    kill_fee: 'If the Client cancels the project after signing, a kill fee of 25% of the remaining unpaid balance is due.',
+    work_done: 'If the Client cancels the project, the Client shall pay for all work completed up to the date of cancellation.',
+    no_refund: 'Payments made are non-refundable once work has commenced.'
+  }[cancelPolicy] || '';
+
+  const delivList = deliverables.filter(d => d.trim()).map(d => `<li>${escHtml(d)}</li>`).join('');
+
+  // Optional clauses
+  const clIP = checked('cl-ip') ? `
+    <h3>7. Intellectual Property</h3>
+    <p>Upon receipt of full payment, the Freelancer assigns to the Client all rights, title, and interest in and to the work product created under this Agreement, including all intellectual property rights. Prior to full payment, the Freelancer retains all rights to the work.</p>` : '';
+
+  const clNDA = checked('cl-nda') ? `
+    <h3>8. Confidentiality</h3>
+    <p>Both parties agree to keep confidential all non-public information disclosed in connection with this Agreement ("Confidential Information"). Neither party shall disclose, use, or reproduce any Confidential Information without prior written consent of the other party. This obligation survives termination of this Agreement.</p>` : '';
+
+  const clPortfolio = checked('cl-portfolio') ? `
+    <h3>9. Portfolio & Attribution</h3>
+    <p>The Freelancer retains the right to display and link to the completed project as part of their professional portfolio, and to describe their role in promotional materials, unless the Client provides written notice requesting confidentiality.</p>` : '';
+
+  const clLiability = checked('cl-liability') ? `
+    <h3>10. Limitation of Liability</h3>
+    <p>In no event shall the Freelancer's total liability to the Client exceed the total fees paid under this Agreement. Neither party shall be liable for indirect, incidental, special, or consequential damages arising out of or related to this Agreement.</p>` : '';
+
+  const clNonSol = checked('cl-nonsol') ? `
+    <h3>11. Non-Solicitation</h3>
+    <p>For a period of 12 months following the end of this Agreement, the Client shall not directly or indirectly solicit or hire any subcontractors or employees introduced by the Freelancer without prior written consent.</p>` : '';
+
+  const clForce = checked('cl-force') ? `
+    <h3>12. Force Majeure</h3>
+    <p>Neither party shall be liable for delays or failure to perform obligations under this Agreement due to circumstances beyond their reasonable control, including acts of God, natural disasters, government actions, pandemics, or major internet outages.</p>` : '';
+
+  const clDispute = checked('cl-dispute') ? `
+    <h3>13. Dispute Resolution</h3>
+    <p>In the event of any dispute arising from this Agreement, the parties agree to first attempt resolution through good-faith negotiation. If unresolved within 30 days, the parties agree to pursue mediation before initiating litigation.</p>` : '';
+
+  const customHTML = customClauses ? `<h3>Additional Terms</h3><p>${escHtml(customClauses).replace(/\n/g,'<br>')}</p>` : '';
+
+  document.getElementById('contractDoc').innerHTML = `
+    <div class="doc-header">
+      <div class="doc-title">${typeName} Agreement</div>
+      <div class="doc-subtitle">This Agreement is entered into as of ${ph(fmtDate(contractDate), 'Contract Date')}</div>
+    </div>
+
+    <div class="doc-meta">
+      <div class="doc-meta-block">
+        <h4>Freelancer (Service Provider)</h4>
+        <p>${ph(fName, 'Your Name')}</p>
+        <span>${ph(fTitle, 'Your Title')}</span>
+        <span>${ph(fEmail, 'your@email.com')}</span>
+        ${fPhone ? `<span>${fPhone}</span>` : ''}
+        ${fAddress ? `<span>${fAddress}</span>` : ''}
+      </div>
+      <div class="doc-meta-block">
+        <h4>Client</h4>
+        <p>${ph(cName, 'Client Company')}</p>
+        <span>${ph(cContact, 'Contact Name')}</span>
+        <span>${ph(cEmail, 'client@email.com')}</span>
+        ${cPhone ? `<span>${cPhone}</span>` : ''}
+        ${cAddress ? `<span>${cAddress}</span>` : ''}
+      </div>
+    </div>
+
+    <h3>1. Project Overview</h3>
+    <p><strong>Project Name:</strong> ${ph(projectName, 'Project Name')}</p>
+    <p><strong>Project Dates:</strong> ${ph(fmtDate(startDate), 'Start Date')} through ${ph(fmtDate(deadline), 'Deadline')}</p>
+    ${projectDesc ? `<p>${escHtml(projectDesc)}</p>` : '<p class="placeholder">[Project description will appear here]</p>'}
+
+    <h3>2. Scope of Work & Deliverables</h3>
+    <p>The Freelancer agrees to provide the following deliverables:</p>
+    <ul>${delivList || '<li class="placeholder">[Add deliverables in the Scope tab]</li>'}</ul>
+
+    ${outOfScope ? `<p><strong>Not Included:</strong> ${escHtml(outOfScope)}</p>` : ''}
+
+    <h3>3. Revisions</h3>
+    <p>This Agreement includes <strong>${revisions === 'unlimited' ? 'unlimited' : revisions} round${revisions > 1 ? 's' : ''} of revisions</strong>. ${revRate ? `Additional revisions beyond this scope will be billed at ${escHtml(revRate)}.` : 'Any revisions beyond this scope will require a separate agreement.'}</p>
+
+    <h3>4. Compensation</h3>
+    ${totalDisplay}
+    <table class="payment-table"><tbody>${paymentRows}</tbody></table>
+    <p><strong>Payment Due:</strong> Invoices are due within ${netDays} day${netDays !== '1' ? 's' : ''} of receipt. ${lateFeeText}</p>
+    ${payMethods ? `<p><strong>Accepted Payment Methods:</strong> ${escHtml(payMethods)}</p>` : ''}
+
+    <h3>5. Cancellation</h3>
+    <p>${cancelText}</p>
+
+    <h3>6. Independent Contractor</h3>
+    <p>The Freelancer is an independent ${contractorType === 'independent' ? 'contractor' : contractorType} and not an employee of the Client. The Freelancer is responsible for all taxes, insurance, and other obligations arising from this independent contractor relationship.</p>
+
+    ${clIP}${clNDA}${clPortfolio}${clLiability}${clNonSol}${clForce}${clDispute}
+
+    <h3>Governing Law</h3>
+    <p>This Agreement shall be governed by the laws of ${ph(jurisdiction, 'Your Jurisdiction')}. Any disputes shall be resolved in the courts of that jurisdiction.</p>
+
+    ${customHTML}
+
+    <div class="signature-block">
+      <div>
+        <div class="sig-line">
+          <div class="sig-name">${ph(fName, 'Freelancer Name')}</div>
+          <div class="sig-role">${ph(fTitle, 'Title')}</div>
+          <div class="sig-role" style="margin-top:4px">Date: ___________________</div>
+        </div>
+      </div>
+      <div>
+        <div class="sig-line">
+          <div class="sig-name">${ph(cContact || cName, 'Client Name')}</div>
+          <div class="sig-role">${ph(cName, 'Company')}</div>
+          <div class="sig-role" style="margin-top:4px">Date: ___________________</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Actions ──
+function resetForm() {
+  if (!confirm('Reset all fields? This cannot be undone.')) return;
+  document.querySelectorAll('input[type=text], input[type=email], input[type=number], input[type=date], textarea').forEach(el => el.value = '');
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = true);
+  deliverables = [...typeDefaults[currentType]];
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('contractDate').value = today;
+  renderDeliverables();
+  updateContract();
+  showToast('Form reset');
+}
+
+function copyText() {
+  const text = document.getElementById('contractDoc').innerText;
+  navigator.clipboard.writeText(text).then(() => showToast('Contract text copied!')).catch(() => showToast('Use Ctrl+C to copy'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

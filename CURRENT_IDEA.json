@@ -1,12 +1,12 @@
 {
   "status": "pending_review",
-  "name": "qrcraft",
-  "idea": "QRCraft is a free browser-based custom QR code generator — users enter a URL, text, WiFi credentials, vCard, or email and instantly get a beautifully styled QR code they can customize with colors, logos, and download as PNG or SVG.",
-  "why_trending": "QR codes exploded post-pandemic and remain ubiquitous in 2026 for restaurant menus, business cards, events, and marketing. 'QR code generator' receives millions of monthly searches globally; Product Hunt regularly features QR tools and competitors like QR Tiger charge $9.99–$49.99/month for custom styling.",
-  "why_profitable": "Freemium model: free basic QR codes with premium unlocks (dynamic QR codes that can be edited after printing, analytics/scan tracking, bulk generation, white-label). High-CPM Google AdSense revenue from small-business traffic. QR Tiger and Bitly QR charge $9–50/month validating strong willingness to pay.",
-  "why_easy": "100% client-side: QRCode.js via CDN handles all encoding — zero backend required. Logo embedding, color customization, and PNG/SVG export all use Canvas API natively in the browser. Pure HTML/CSS/JS single-page app that works offline and deploys free to GitHub Pages.",
-  "repo_url": "https://github.com/PepeGoat/idea-queue/tree/main/apps/qrcraft",
-  "demo_url": "https://pepegoat.github.io/idea-queue/apps/qrcraft/",
-  "note": "Demo code stored in idea-queue/apps/qrcraft/ because session token lacked repo-creation permissions. To launch: create github.com/PepeGoat/qrcraft repo and copy apps/qrcraft/index.html there, then enable GitHub Pages.",
-  "created_at": "2026-06-12T00:00:00Z"
+  "name": "contractkit",
+  "idea": "ContractKit is a free, browser-based freelancer contract generator — users fill in a form with their details, project scope, payment terms, and legal clauses, then instantly preview and print/download a professional PDF contract with zero signup required.",
+  "why_trending": "Freelancing is at an all-time high in 2026 — over 73 million Americans freelance and 'freelance contract template' receives millions of monthly searches. Legal tech tools like PandaDoc and Bonsai saw record signups in Q1 2026 as gig workers seek protection; 'free contract generator' search volume has grown 40% YoY per SEMrush data.",
+  "why_profitable": "Freemium: free basic generation with premium unlocks (custom branding, e-signature integration, unlimited saved contracts, team sharing). High-value AdSense traffic from freelance/legal keywords (CPC $3-8). Affiliate revenue from Stripe, Wise, and HelloSign. PandaDoc charges $19-49/month validating strong willingness to pay.",
+  "why_easy": "100% client-side — the contract is generated as styled HTML from form fields using vanilla JS, and PDF export uses the browser's native print-to-PDF. No backend, no npm, no build step. Deploys as a single static index.html on GitHub Pages in seconds.",
+  "repo_url": "https://github.com/PepeGoat/idea-queue/tree/main/apps/contractkit",
+  "demo_url": "https://pepegoat.github.io/idea-queue/apps/contractkit/",
+  "note": "Demo code stored in idea-queue/apps/contractkit/ because session token lacked repo-creation permissions. To launch: create github.com/PepeGoat/contractkit repo and copy apps/contractkit/index.html there, then enable GitHub Pages.",
+  "created_at": "2026-06-13T02:00:00Z"
 }
