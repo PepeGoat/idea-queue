@@ -1,12 +1,12 @@
 {
   "status": "pending_review",
-  "name": "contractkit",
-  "idea": "ContractKit is a free, browser-based freelancer contract generator — users fill in a form with their details, project scope, payment terms, and legal clauses, then instantly preview and print/download a professional PDF contract with zero signup required.",
-  "why_trending": "Freelancing is at an all-time high in 2026 — over 73 million Americans freelance and 'freelance contract template' receives millions of monthly searches. Legal tech tools like PandaDoc and Bonsai saw record signups in Q1 2026 as gig workers seek protection; 'free contract generator' search volume has grown 40% YoY per SEMrush data.",
-  "why_profitable": "Freemium: free basic generation with premium unlocks (custom branding, e-signature integration, unlimited saved contracts, team sharing). High-value AdSense traffic from freelance/legal keywords (CPC $3-8). Affiliate revenue from Stripe, Wise, and HelloSign. PandaDoc charges $19-49/month validating strong willingness to pay.",
-  "why_easy": "100% client-side — the contract is generated as styled HTML from form fields using vanilla JS, and PDF export uses the browser's native print-to-PDF. No backend, no npm, no build step. Deploys as a single static index.html on GitHub Pages in seconds.",
-  "repo_url": "https://github.com/PepeGoat/idea-queue/tree/main/apps/contractkit",
-  "demo_url": "https://pepegoat.github.io/idea-queue/apps/contractkit/",
-  "note": "Demo code stored in idea-queue/apps/contractkit/ because session token lacked repo-creation permissions. To launch: create github.com/PepeGoat/contractkit repo and copy apps/contractkit/index.html there, then enable GitHub Pages.",
-  "created_at": "2026-06-13T02:00:00Z"
+  "name": "billcraft",
+  "idea": "BillCraft is a free, browser-only professional invoice generator for freelancers and small businesses — fill in your details, add line items with quantity and rate, and download a polished PDF invoice instantly with no signup required.",
+  "why_trending": "Freelancing and creator-economy micro-businesses are booming in 2026; micro-SaaS reports cite freelancer tooling as a top revenue category ($10K–60K/month MRR). 'Free invoice generator' is among the highest-volume commercial-intent searches (~2M/month), and Product Hunt's June 2026 leaderboard is dominated by productivity tools that shorten the path from idea to output.",
+  "why_profitable": "Comparable tools (Invoice Ninja, Wave, FreshBooks) charge $15–50/month. A zero-friction free tier captures massive organic SEO traffic; premium unlocks (custom branding, recurring invoices, client portal) or AdSense on the free tier convert well at high CPC ($4–9 for financial keywords).",
+  "why_easy": "The entire app is a single self-contained HTML/CSS/JS file: form state lives in the DOM, totals compute client-side, the live preview renders with innerHTML, PDF export uses jsPDF via CDN, and drafts persist in localStorage. No server, database, build step, or API key required.",
+  "repo_url": "https://github.com/pepegoat/idea-queue/tree/main/demos/billcraft",
+  "demo_url": "https://pepegoat.github.io/idea-queue/demos/billcraft/index.html",
+  "note": "Demo stored in idea-queue/demos/billcraft/ because the session token lacks repo-creation permissions. To launch standalone: create github.com/pepegoat/billcraft, copy demos/billcraft/index.html there, enable GitHub Pages.",
+  "created_at": "2026-06-15T00:00:00Z"
 }
